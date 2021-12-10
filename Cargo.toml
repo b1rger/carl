@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2021 Birger Schacht <birger@rantanplan.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
+[package]
+name = "carl"
+version = "0.0.1-alpha.1"
+authors = ["Birger Schacht <birger@rantanplan.org>"]
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "carl is a commandline calendar"
+repository = "https://codeberg.org/birger/carl"
+keywords = ["calendar", "ical", "cli"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+clap = "3.0.0-beta.5"
+ansi_term = "0.12.1"
+toml = "0.5.3"
+serde = { version = "1.0", features = ["derive"] }
+xdg = "2.4.0"
+ical = "0.7.*"

@@ -1,0 +1,15 @@
+################################
+# default config file for calr #
+################################
+
+# the name of the calr theme:
+theme = "default"
+
+# you can include multiple ics files:
+[[ical]]
+file = "carl.ics"
+
+#[[ical]]
+#file = "birthdays.ics"
+#stylenames = ['FGPurple']
+#weight = 3

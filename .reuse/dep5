@@ -1,0 +1,11 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: calr
+Upstream-Contact: Birger Schacht <birger@rantanplan.org>
+
+Files: Cargo.lock
+Copyright: 2021 Birger Schacht <birger@rantanplan.org>
+License: GPL-3.0-or-later
+
+Files: data/*
+Copyright: 2021 Birger Schacht <birger@rantanplan.org>
+License: CC0-1.0

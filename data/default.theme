@@ -1,0 +1,37 @@
+###############################
+# default theme file for carl #
+###############################
+
+[[date]]
+properties = ['CurrentDate']
+stylenames = [ 'BGRed', 'FGBlack', 'Bold']
+weight = 3
+styletype = 'Dark'
+
+[[date]]
+properties = ['CurrentDate']
+stylenames = [ 'BGGreen', 'FGBlack', 'Bold']
+weight = 3
+styletype = 'Light'
+
+[[date]]
+properties = ['BeforeFirstDayOfMonth']
+stylenames = ['Hidden']
+weight = 4
+
+[[date]]
+properties = ['AfterLastDayOfMonth']
+stylenames = ['Hidden']
+weight = 4
+
+[[date]]
+properties = ['BeforeCurrentDate']
+stylenames = ['Dimmed']
+
+[[date]]
+properties = ['AfterCurrentDate']
+stylenames = ['Bold']
+
+[[date]]
+properties = ['IsEvent']
+stylenames = ['BGPurple']
