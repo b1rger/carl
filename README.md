@@ -47,6 +47,12 @@ Default output of `carl`
 
 </div>
 
+## Installation
+
+```
+cargo install carl --vers 0.0.1-alpha.2
+```
+
 ## Commandline flags
 
 - **-1**, **--one**: Display single month output.  (This is the default.)
