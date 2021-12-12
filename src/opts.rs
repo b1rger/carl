@@ -8,29 +8,29 @@ use clap::{crate_authors, crate_name, crate_version, Parser};
 #[derive(Parser)]
 #[clap(version = crate_version!(), author = crate_authors!(","), about = "Display a calendar", mut_arg("version", |a| a.short('v')))]
 pub struct Opts {
-    #[clap(short = '1', long = "one", about = "show only current month (default)", conflicts_with_all = &["three", "year"])]
+    #[clap(short = '1', long = "one", help = "show only current month (default)", conflicts_with_all = &["three", "year"])]
     pub one: bool,
     #[clap(
         short = '3',
         long = "three",
-        about = "show previous, current and next month",
+        help = "show previous, current and next month",
         conflicts_with_all = &["one", "year"]
     )]
     pub three: bool,
-    #[clap(short = 'y', long = "year", about = "show whole current year", conflicts_with_all = &["one", "three"])]
+    #[clap(short = 'y', long = "year", help = "show whole current year", conflicts_with_all = &["one", "three"])]
     pub year: bool,
-    #[clap(short = 's', long = "sunday", about = "Sunday as first day of week")]
+    #[clap(short = 's', long = "sunday", help = "Sunday as first day of week")]
     pub sunday: bool,
-    #[clap(short = 'm', long = "monday", about = "Monday as first day of week")]
+    #[clap(short = 'm', long = "monday", help = "Monday as first day of week")]
     pub monday: bool,
-    #[clap(short = 'j', long = "julian", about = "output Julian dates")]
+    #[clap(short = 'j', long = "julian", help = "output Julian dates")]
     pub julian: bool,
 
-    #[clap(short = 'a', long = "agenda", about = "show agenda")]
+    #[clap(short = 'a', long = "agenda", help = "show agenda")]
     pub agenda: bool,
-    #[clap(long = "themestyletype", about = "select dark or light theme styles", possible_values=["dark", "light"])]
+    #[clap(long = "themestyletype", help = "select dark or light theme styles", possible_values=["dark", "light"])]
     pub themestyletype: Option<String>,
-    #[clap(long = "theme", about = "select theme by name", takes_value = true)]
+    #[clap(long = "theme", help = "select theme by name", takes_value = true)]
     pub theme: Option<String>,
 
     #[clap(multiple_values = true, max_values = 3)]
