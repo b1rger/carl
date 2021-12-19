@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # carl
 
-![carl logo](data/logo.svg)
+![carl logo](https://codeberg.org/birger/carl/media/branch/main/data/logo.svg)
 
 `carl` is a calendar for the commandline. It tries to mimic the various
 `cal(1)` implementations out there, but also adds enhanced features like colors
@@ -32,15 +32,15 @@ Default output of `carl`
 </th></tr>
 <tr><td>
 
-![Screenshots of default carl](data/screenshot-default.png)
+![Screenshots of default carl](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-default.png)
 
 </td><td>
 
-![Screenshot of carl with custom colors](data/screenshot-custom.png)
+![Screenshot of carl with custom colors](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-custom.png)
 
 </td><td>
 
-![Screenshot of carl with ical events highlighted](data/screenshot-ical.png)
+![Screenshot of carl with ical events highlighted](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-ical.png)
 
 </td></tr>
 </table>
