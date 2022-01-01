@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 [package]
 name = "carl"
-version = "0.0.1-alpha.2"
+version = "0.0.1"
 authors = ["Birger Schacht <birger@rantanplan.org>"]
 edition = "2021"
 license = "GPL-3.0-or-later"
@@ -14,7 +14,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 anyhow = "1.0"
 chrono = "0.4"
-clap = { version = "=3.0.0-rc.4", features = ["derive", "cargo"] }
+clap = { version = "3.0.0", features = ["derive", "cargo"] }
 ansi_term = "0.12.1"
 toml = "0.5.3"
 serde = { version = "1.0", features = ["derive"] }
