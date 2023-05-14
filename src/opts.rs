@@ -56,7 +56,7 @@ impl Default for Opts {
 
 impl Opts {
     pub fn validate_date(&self) -> Result<ChronoDate> {
-        let mut today: ChronoDate = Local::now().date();
+        let mut today: ChronoDate = Local::now().date_naive();
         let mut year: i32 = today.year();
         let mut month: u32 = today.month();
         let mut day: u32 = today.day();
@@ -129,7 +129,8 @@ impl Opts {
             eprintln!("Could not parse date value(s) - using today.");
             return Ok(today);
         }
-        if let Some(x) = Local.ymd_opt(year, month, day).single() {
+        //if let Some(x) = Local.ymd_opt(year, month, day).single() {
+        if let Some(x) = NaiveDate::from_ymd_opt(year, month, day) {
             today = x;
         } else {
             eprintln!("Could not parse date value(s) - using today.");
@@ -144,13 +145,13 @@ mod tests {
 
     #[test]
     fn test_validate_date_defaults_to_now() {
-        let today: ChronoDate = Local::now().date();
+        let today: ChronoDate = Local::now().date_naive();
         let o: Opts = Opts::default();
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
     fn test_validate_date_default_to_now_with_custom_year() {
-        let today: ChronoDate = Local::now().date().with_year(2007).unwrap();
+        let today: ChronoDate = Local::now().date_naive().with_year(2007).unwrap();
         let mut o: Opts = Opts::default();
         o.date = vec![String::from("2007")];
         assert_eq!(today, o.validate_date().unwrap());
@@ -158,7 +159,7 @@ mod tests {
     #[test]
     fn test_validate_date_defaults_to_now_with_custom_year_and_month() {
         let today: ChronoDate = Local::now()
-            .date()
+            .date_naive()
             .with_year(2007)
             .unwrap()
             .with_month(1)
@@ -170,7 +171,7 @@ mod tests {
     #[test]
     fn test_validate_date_defaults_to_now_with_custom_year_and_month_and_day() {
         let today: ChronoDate = Local::now()
-            .date()
+            .date_naive()
             .with_year(2007)
             .unwrap()
             .with_month(1)
@@ -183,7 +184,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_defaults_to_now_with_ambiguous_arguments() {
-        let today: ChronoDate = Local::now().date();
+        let today: ChronoDate = Local::now().date_naive();
         let mut o: Opts = Opts::default();
         o.date = vec![
             String::from("2007"),
@@ -243,7 +244,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_errors_with_non_existent_date() {
-        let today: ChronoDate = Local::now().date();
+        let today: ChronoDate = Local::now().date_naive();
         let mut o: Opts = Opts::default();
         o.date = vec![String::from("2007"), String::from("2"), String::from("30")];
         assert_eq!(today, o.validate_date().unwrap());

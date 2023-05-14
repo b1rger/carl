@@ -38,9 +38,7 @@ impl TryFrom<ical::property::Property> for EventDateTime {
                     paramname == "VALUE" && params.contains(&"DATE".to_string())
                 }) {
                     if let Ok(naive_date) = NaiveDate::parse_from_str(&x, "%Y%m%d") {
-                        if let Some(x) = Local.from_local_date(&naive_date).single() {
-                            return Ok(EventDateTime::Date(x));
-                        }
+                        return Ok(EventDateTime::Date(naive_date));
                     }
                 } else if let Ok(naive_datetime) =
                     NaiveDateTime::parse_from_str(&x, "%Y%m%dT%H%M%S")
@@ -189,7 +187,7 @@ mod tests {
             params: Some(vec![(String::from("VALUE"), vec![String::from("DATE")])]),
             value: Some(String::from("19700101")),
         };
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::from_ymd_opt(1970, 1, 1).unwrap();
         assert_eq!(
             EventDateTime::try_from(property),
             Ok(EventDateTime::Date(date))
@@ -202,7 +200,7 @@ mod tests {
             params: Some(vec![]),
             value: Some(String::from("19700101T010130")),
         };
-        let date = Local.ymd(1970, 1, 1).and_hms(1, 1, 30);
+        let date = Local.timestamp_opt(90, 0).unwrap();
         assert_eq!(
             EventDateTime::try_from(property),
             Ok(EventDateTime::DateTime(date))

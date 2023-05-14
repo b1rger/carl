@@ -41,20 +41,20 @@ mod tests {
     use super::*;
     use crate::config::Style;
     use crate::events::{Event, EventDateTime, EventFrequency};
-    use chrono::{Local, TimeZone};
+    use chrono::NaiveDate;
 
     #[test]
     fn test_fmt() {
         let mut ctx = Context::default();
         ctx.opts.agenda = true;
         let e1: Event = Event {
-            start: EventDateTime::Date(Local.ymd(1970, 1, 1)),
+            start: EventDateTime::Date(NaiveDate::from_ymd_opt(1970, 1, 1).unwrap()),
             end: None,
             frequency: EventFrequency::None,
             summary: String::from("Fake Event"),
         };
         let e2: Event = Event {
-            start: EventDateTime::Date(Local.ymd(1971, 1, 1)),
+            start: EventDateTime::Date(NaiveDate::from_ymd_opt(1971, 1, 1).unwrap()),
             end: None,
             frequency: EventFrequency::None,
             summary: String::from("Fake Event"),
