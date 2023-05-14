@@ -50,7 +50,7 @@ Default output of `carl`
 ## Installation
 
 ```
-cargo install carl --vers 0.0.1-alpha.2
+cargo install carl
 ```
 
 ## Commandline flags
