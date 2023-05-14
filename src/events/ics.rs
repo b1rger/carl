@@ -6,6 +6,7 @@ use crate::events::{Event, EventDateTime, EventFrequency, Events};
 use chrono::prelude::*;
 use ical::parser::ical::component::IcalEvent;
 use std::fs::File;
+use std::path::{Path, PathBuf};
 use std::io::BufReader;
 
 impl From<ical::property::Property> for EventFrequency {
@@ -101,20 +102,40 @@ pub trait ReadFromIcsFile {
 impl ReadFromIcsFile for Events {
     fn read_from_ics_file(filepath: &str) -> Events {
         let mut events: Events = vec![];
+        let mut filepaths: Vec<PathBuf> = vec![];
 
-        if let Ok(f) = File::open(filepath.to_string()) {
-            let buf = BufReader::new(f);
-            let mut reader = ical::IcalParser::new(buf);
-
-            while let Some(Ok(cal)) = reader.next() {
-                for event in cal.events {
-                    if let Ok(e) = Event::try_from(event) {
-                        events.push(e);
+        let path = Path::new(filepath);
+        if path.is_dir() {
+            if let Ok(path) = path.read_dir() {
+                for entry in path {
+                    if let Ok(entry) = entry {
+                        if entry.path().is_file() {
+                            filepaths.push(entry.path());
+                        }
                     }
                 }
+            } else {
+                eprintln!("Could not read dir {}", filepath);
             }
         } else {
-            eprintln!("Could not read file {}", filepath);
+            filepaths.push(path.to_path_buf())
+        }
+
+        for filepath in filepaths.iter() {
+            if let Ok(f) = File::open(filepath) {
+                let buf = BufReader::new(f);
+                let mut reader = ical::IcalParser::new(buf);
+
+                while let Some(Ok(cal)) = reader.next() {
+                    for event in cal.events {
+                        if let Ok(e) = Event::try_from(event) {
+                            events.push(e);
+                        }
+                    }
+                }
+            } else {
+                eprintln!("Could not read file {}", filepath.display());
+            }
         }
         events
     }
@@ -241,5 +262,20 @@ mod tests {
     fn test_read_from_ics_file() {
         let filename = "foobar.ics";
         assert!(Events::read_from_ics_file(filename).is_empty());
+    }
+    #[test]
+    fn test_read_from_dir() {
+        let filename = "/tmp";
+        assert!(Events::read_from_ics_file(filename).is_empty());
+    }
+    #[test]
+    fn test_read_from_dir_nor() {
+        let filename = "/root";
+        assert!(Events::read_from_ics_file(filename).is_empty());
+    }
+    #[test]
+    fn test_read_from_carl_ics() {
+        let filename = concat!(env!("CARGO_MANIFEST_DIR"), "/data/carl.ics");
+        assert_eq!(Events::read_from_ics_file(filename).len(), 21);
     }
 }

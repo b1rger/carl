@@ -93,6 +93,8 @@ file = "/home/user/birthdays.ics"
 stylenames = ['FGPurple']
 ```
 
+If the `file` setting points to a directory, `carl` uses all the files in that directory it can parse.
+
 A sample configuration file is located in [data/config.toml](data/config.toml).
 
 ### Styles
