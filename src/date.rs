@@ -105,13 +105,13 @@ impl fmt::Display for Date<'_> {
 mod tests {
     use super::*;
     use crate::events::Event;
-    use chrono::{Local, TimeZone};
+    use chrono::NaiveDate;
 
     #[test]
     fn test_fmt_0() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -123,9 +123,9 @@ mod tests {
 
     #[test]
     fn test_fmt_1() {
-        let date = Local.ymd(1970, 1, 15);
+        let date = NaiveDate::from_ymd_opt(1970, 1, 15).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -137,9 +137,9 @@ mod tests {
 
     #[test]
     fn test_fmt_2() {
-        let date = Local.ymd(1970, 2, 1);
+        let date = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -150,10 +150,10 @@ mod tests {
     }
     #[test]
     fn test_fmt_is_julian() {
-        let date = Local.ymd(1970, 1, 15);
+        let date = NaiveDate::from_ymd_opt(1970, 1, 15).unwrap();
         let mut ctx = Context::default();
         ctx.opts.julian = true;
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -164,9 +164,9 @@ mod tests {
     }
     #[test]
     fn test_fmt_is_event() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let mut ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
 
         let event = Event::default();
         let style = Style::default();
@@ -183,9 +183,9 @@ mod tests {
 
     #[test]
     fn test_satisfy_firstdayofdisplayedmonth() {
-        let date = Local.ymd(1970, 2, 1);
+        let date = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 2, 1);
+        let firstdayofdisplayedmonth = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let d = Date {
             date,
             ctx: &ctx,
@@ -196,9 +196,9 @@ mod tests {
     }
     #[test]
     fn test_satisfy_aftercurrentdate() {
-        let date = Local.ymd(1970, 2, 1);
+        let date = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 2, 1);
+        let firstdayofdisplayedmonth = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let d = Date {
             date,
             ctx: &ctx,
@@ -209,9 +209,9 @@ mod tests {
     }
     #[test]
     fn test_satisfy_afterlastdayofmonth() {
-        let date = Local.ymd(1970, 1, 31);
+        let date = NaiveDate::from_ymd_opt(1970, 1, 31).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -222,9 +222,9 @@ mod tests {
     }
     #[test]
     fn test_is_event() {
-        let date = Local.ymd(1970, 1, 31);
+        let date = NaiveDate::from_ymd_opt(1970, 1, 31).unwrap();
         let ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
         let d = Date {
             date,
             ctx: &ctx,
@@ -234,9 +234,9 @@ mod tests {
     }
     #[test]
     fn test_satisfy_is_event() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let mut ctx = Context::default();
-        let firstdayofdisplayedmonth = Local.ymd(1970, 1, 1);
+        let firstdayofdisplayedmonth = NaiveDate::default();
 
         let event = Event::default();
         let style = Style::default();

@@ -40,24 +40,21 @@ impl fmt::Display for Agenda<'_> {
 mod tests {
     use super::*;
     use crate::config::Style;
-    use crate::events::{Event, EventDateTime, EventFrequency};
-    use chrono::{Local, TimeZone};
+    use crate::events::{Event, EventDateTime};
+    use chrono::{Duration, NaiveDate};
 
     #[test]
     fn test_fmt() {
         let mut ctx = Context::default();
         ctx.opts.agenda = true;
         let e1: Event = Event {
-            start: EventDateTime::Date(Local.ymd(1970, 1, 1)),
-            end: None,
-            frequency: EventFrequency::None,
             summary: String::from("Fake Event"),
+            ..Default::default()
         };
         let e2: Event = Event {
-            start: EventDateTime::Date(Local.ymd(1971, 1, 1)),
-            end: None,
-            frequency: EventFrequency::None,
+            start: EventDateTime::Date(NaiveDate::default() + Duration::weeks(56)),
             summary: String::from("Fake Event"),
+            ..Default::default()
         };
         let s1: Style = Style::default();
         let s2: Style = Style::default();
@@ -66,7 +63,7 @@ mod tests {
         let a = Agenda { ctx: &ctx };
         assert_eq![
             format!("{}", a),
-            String::from("Agenda\n· Thu, Jan,  1: Fake Event\n· Fri, Jan,  1: Fake Event\n")
+            String::from("Agenda\n· Thu, Jan,  1: Fake Event\n· Thu, Jan, 28: Fake Event\n")
         ];
     }
 }

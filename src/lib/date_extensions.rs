@@ -1,26 +1,27 @@
 // SPDX-FileCopyrightText: 2021 Birger Schacht <birger@rantanplan.org>
 // SPDX-License-Identifier: GPL-3.0-or-later
 use chrono::prelude::*;
+use chrono::Days;
 use chrono::Duration;
+use chrono::Months;
 
 pub trait DateExtensions {
-    fn first_day_of_month(&self) -> chrono::Date<Local>;
-    fn last_day_of_month(&self) -> chrono::Date<Local>;
-    fn first_day_of_year(&self) -> chrono::Date<Local>;
-    fn last_day_of_year(&self) -> chrono::Date<Local>;
-    fn first_day_of_next_month(&self) -> chrono::Date<Local>;
-    fn first_day_of_week_before_first_day_of_month(&self, from_sunday: bool)
-        -> chrono::Date<Local>;
-    fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::Date<Local>;
+    fn first_day_of_month(&self) -> chrono::NaiveDate;
+    fn last_day_of_month(&self) -> chrono::NaiveDate;
+    fn first_day_of_year(&self) -> chrono::NaiveDate;
+    fn last_day_of_year(&self) -> chrono::NaiveDate;
+    fn first_day_of_next_month(&self) -> chrono::NaiveDate;
+    fn first_day_of_week_before_first_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate;
+    fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate;
     fn month_full_weeks_iter(&self, from_sunday: bool) -> MonthFullWeeksIter;
 }
 
-impl DateExtensions for chrono::Date<Local> {
-    fn first_day_of_month(&self) -> chrono::Date<Local> {
-        let mut prevdate: chrono::Date<Local> = *self;
+impl DateExtensions for chrono::NaiveDate {
+    fn first_day_of_month(&self) -> chrono::NaiveDate {
+        let mut prevdate: chrono::NaiveDate = *self;
         while let Some(x) = prevdate.pred_opt() {
             if x.month() == prevdate.month() {
-                prevdate = prevdate.pred();
+                prevdate = x; //prevdate.pred();
             } else {
                 break;
             }
@@ -28,35 +29,21 @@ impl DateExtensions for chrono::Date<Local> {
         prevdate
     }
 
-    fn last_day_of_month(&self) -> chrono::Date<Local> {
-        let mut nextdate: chrono::Date<Local> = *self;
-        while let Some(x) = nextdate.succ_opt() {
-            if x.month() == nextdate.month() {
-                nextdate = nextdate.succ();
-            } else {
-                break;
-            }
-        }
-        nextdate
+    fn last_day_of_month(&self) -> chrono::NaiveDate {
+        let mut date: chrono::NaiveDate = self.with_day(1).unwrap();
+        date = date + Months::new(1);
+        date.pred_opt().unwrap()
     }
 
-    fn first_day_of_year(&self) -> chrono::Date<Local> {
-        let mut prevdate: chrono::Date<Local> = *self;
-        while let Some(x) = prevdate.pred_opt() {
-            if x.year() == prevdate.year() {
-                prevdate = prevdate.pred();
-            } else {
-                break;
-            }
-        }
-        prevdate
+    fn first_day_of_year(&self) -> chrono::NaiveDate {
+        self.with_day(1).unwrap().with_month(1).unwrap()
     }
 
-    fn last_day_of_year(&self) -> chrono::Date<Local> {
-        let mut nextdate: chrono::Date<Local> = *self;
+    fn last_day_of_year(&self) -> chrono::NaiveDate {
+        let mut nextdate: chrono::NaiveDate = *self;
         while let Some(x) = nextdate.succ_opt() {
             if x.year() == nextdate.year() {
-                nextdate = nextdate.succ();
+                nextdate = x;
             } else {
                 break;
             }
@@ -64,14 +51,14 @@ impl DateExtensions for chrono::Date<Local> {
         nextdate
     }
 
-    fn first_day_of_next_month(&self) -> chrono::Date<Local> {
-        self.last_day_of_month().succ()
+    fn first_day_of_next_month(&self) -> chrono::NaiveDate {
+        if let Some(x) = self.last_day_of_month().succ_opt() {
+            return x;
+        }
+        *self
     }
 
-    fn first_day_of_week_before_first_day_of_month(
-        &self,
-        from_sunday: bool,
-    ) -> chrono::Date<Local> {
+    fn first_day_of_week_before_first_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate {
         let days_to_weekstart = if from_sunday {
             self.first_day_of_month().weekday().num_days_from_sunday()
         } else {
@@ -80,7 +67,7 @@ impl DateExtensions for chrono::Date<Local> {
         self.first_day_of_month() - Duration::days(days_to_weekstart.into())
     }
 
-    fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::Date<Local> {
+    fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate {
         let last_day_plus_one_week = self.last_day_of_month() + Duration::days(7);
         let days_to_weekstart = if from_sunday {
             last_day_plus_one_week.weekday().num_days_from_sunday()
@@ -100,8 +87,8 @@ impl DateExtensions for chrono::Date<Local> {
 }
 
 pub struct MonthFullWeeksIter {
-    pub base_date: chrono::Date<Local>,
-    current_date: chrono::Date<Local>,
+    pub base_date: chrono::NaiveDate,
+    current_date: chrono::NaiveDate,
     from_sunday: bool,
 }
 
@@ -115,11 +102,11 @@ impl MonthFullWeeksIter {
 }
 
 impl Iterator for MonthFullWeeksIter {
-    type Item = chrono::Date<Local>;
+    type Item = chrono::NaiveDate;
 
     fn next(&mut self) -> Option<Self::Item> {
         let old = self.current_date;
-        self.current_date = old.succ();
+        self.current_date = old + Days::new(1);
 
         if old
             <= self
@@ -136,64 +123,66 @@ impl Iterator for MonthFullWeeksIter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::{Days, Months};
 
     #[test]
     fn test_first_day_of_month() {
-        let i = Local.ymd(2021, 1, 1);
-        let u = Local.ymd(2021, 1, 15);
+        let i = NaiveDate::default();
+        let u = i + Days::new(15);
         assert_eq!(i, u.first_day_of_month());
     }
     #[test]
     fn test_last_day_of_month() {
-        let i = Local.ymd(2021, 1, 31);
-        let u = Local.ymd(2021, 1, 15);
+        let x = NaiveDate::default();
+        let i = x + Days::new(30);
+        let u = x + Days::new(15);
         assert_eq!(i, u.last_day_of_month());
     }
     #[test]
     fn test_first_day_of_year() {
-        let i = Local.ymd(2021, 1, 1);
-        let u = Local.ymd(2021, 2, 15);
+        let i = NaiveDate::default();
+        let u = i + Days::new(15);
         assert_eq!(i, u.first_day_of_year());
     }
     #[test]
     fn test_last_day_of_year() {
-        let i = Local.ymd(2021, 12, 31);
-        let u = Local.ymd(2021, 1, 15);
+        let i = NaiveDate::default() + Months::new(12) - Days::new(1);
+        let u = NaiveDate::default() + Months::new(2);
         assert_eq!(i, u.last_day_of_year());
     }
     #[test]
     fn test_first_day_of_next_month() {
-        let i = Local.ymd(2021, 3, 1);
-        let u = Local.ymd(2021, 2, 1);
+        let i = NaiveDate::default() + Months::new(2);
+        let u = NaiveDate::default() + Months::new(1);
         assert_eq!(i, u.first_day_of_next_month());
     }
     #[test]
     fn test_first_day_of_week_before_first_day_of_month() {
-        let i = Local.ymd(2021, 11, 29);
-        let u = Local.ymd(2021, 12, 15);
+        let i = NaiveDate::default() + Months::new(3) + Days::new(26);
+        let u = NaiveDate::default() + Months::new(4);
         assert_eq!(i, u.first_day_of_week_before_first_day_of_month(false));
     }
     #[test]
     fn test_last_day_of_week_after_last_day_of_month() {
-        let i = Local.ymd(2022, 01, 2);
-        let u = Local.ymd(2021, 12, 15);
+        let i = NaiveDate::default() + Months::new(4) + Days::new(2);
+        let u = NaiveDate::default() + Months::new(3);
         assert_eq!(i, u.last_day_of_week_after_last_day_of_month(false));
     }
     #[test]
     fn test_first_day_of_week_before_first_day_of_month_sunday() {
-        let i = Local.ymd(2021, 11, 28);
-        let u = Local.ymd(2021, 12, 15);
+        let i = NaiveDate::default() + Months::new(2) + Days::new(28);
+        let u = NaiveDate::default() + Months::new(3);
         assert_eq!(i, u.first_day_of_week_before_first_day_of_month(true));
     }
     #[test]
     fn test_last_day_of_week_after_last_day_of_month_sunday() {
-        let i = Local.ymd(2022, 01, 1);
-        let u = Local.ymd(2021, 12, 15);
+        let i = NaiveDate::default() + Months::new(4) + Days::new(1);
+        let u = NaiveDate::default() + Months::new(3);
         assert_eq!(i, u.last_day_of_week_after_last_day_of_month(true));
     }
     #[test]
     fn test_iterator_end() {
-        let i = Local.ymd(2022, 01, 1);
+        let i = NaiveDate::default();
         let mut it = i.month_full_weeks_iter(true);
         for _ in 1..=42 {
             it.next();

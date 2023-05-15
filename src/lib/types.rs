@@ -2,5 +2,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 use chrono::prelude::*;
 
-pub type ChronoDate = chrono::Date<Local>;
+pub type ChronoDate = chrono::NaiveDate;
 pub type ChronoDateTime = chrono::DateTime<Local>;

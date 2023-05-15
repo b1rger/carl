@@ -54,7 +54,7 @@ impl Context {
 impl Default for Context {
     fn default() -> Self {
         Context {
-            usersetdate: Local.ymd(1970, 1, 1),
+            usersetdate: NaiveDate::default(),
             opts: Opts::default(),
             config: Config::default(),
             eventstuple: vec![],

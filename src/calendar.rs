@@ -4,7 +4,7 @@ use crate::lib::types::ChronoDate;
 use crate::lib::{DateExtensions, MonthFullWeeksIter};
 use crate::Context;
 use crate::Date;
-use chrono::{Local, TimeZone};
+use chrono::{Duration, NaiveDate};
 
 use std::fmt;
 
@@ -94,12 +94,13 @@ impl Calendar<'_> {
     fn weekdays(&self) -> String {
         let mut week: Vec<ChronoDate> = vec![];
         let (s, e) = if self.ctx.opts.sunday {
-            (4, 10)
+            (3, 9)
         } else {
-            (5, 11)
+            (4, 10)
         };
         for x in s..=e {
-            week.push(Local.ymd(1970, 1, x))
+            let d = NaiveDate::default() + Duration::days(x);
+            week.push(d);
         }
         let width = self.julian_or_gregorian_width();
         format!(
@@ -126,11 +127,11 @@ impl Calendar<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::{Local, TimeZone};
+    use chrono::NaiveDate;
 
     #[test]
     fn test_calendar_julian_or_gregorian_width_1() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let cal = Calendar {
             dates: vec![date],
             columns: 1,
@@ -140,7 +141,7 @@ mod tests {
     }
     #[test]
     fn test_calendar_julian_or_gregorian_width_2() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let mut ctx = Context::default();
         ctx.opts.julian = true;
         let cal = Calendar {
@@ -152,7 +153,7 @@ mod tests {
     }
     #[test]
     fn test_calendar_fmt() {
-        let date = Local.ymd(1970, 1, 1);
+        let date = NaiveDate::default();
         let cal = Calendar {
             dates: vec![date],
             columns: 1,
@@ -165,7 +166,7 @@ mod tests {
     #[test]
     fn test_calendar_year_fmt() {
         let mut ctx = Context::default();
-        ctx.usersetdate = Local.ymd(2021, 12, 10);
+        ctx.usersetdate = NaiveDate::from_ymd_opt(2021, 12, 10).unwrap();
         ctx.opts.year = true;
 
         let mut dates: Vec<ChronoDate> = vec![];
