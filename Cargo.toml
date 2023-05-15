@@ -8,7 +8,7 @@ edition = "2021"
 license = "GPL-3.0-or-later"
 description = "carl is a commandline calendar"
 repository = "https://codeberg.org/birger/carl"
-keywords = ["calendar", "ical", "cli"]
+keywords = ["calendar", "ical", "cli", "date", "cal"]
 categories = ["command-line-utilities", "date-and-time"]
 
 [dependencies]
