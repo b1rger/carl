@@ -1,11 +1,11 @@
-# SPDX-FileCopyrightText: 2021 Birger Schacht <birger@rantanplan.org>
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2021-2023 Birger Schacht <birger@rantanplan.org>
+# SPDX-License-Identifier: MIT
 [package]
 name = "carl"
 version = "0.0.2"
 authors = ["Birger Schacht <birger@rantanplan.org>"]
 edition = "2021"
-license = "GPL-3.0-or-later"
+license = "MIT"
 description = "carl is a commandline calendar"
 repository = "https://codeberg.org/birger/carl"
 keywords = ["calendar", "ical", "cli", "date", "cal"]
