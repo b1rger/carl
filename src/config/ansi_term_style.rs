@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-use ansi_term::Colour::*;
-use ansi_term::Style;
+use nu_ansi_term::Color::*;
+use nu_ansi_term::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -82,7 +82,7 @@ impl StyleConversion for AnsiTermStyleVector {
                 AnsiTermStyle::FGPurple => style.fg(Purple),
                 AnsiTermStyle::FGCyan => style.fg(Cyan),
                 AnsiTermStyle::FGWhite => style.fg(White),
-                AnsiTermStyle::FGrgb { r, g, b } => style.fg(RGB(*r, *g, *b)),
+                AnsiTermStyle::FGrgb { r, g, b } => style.fg(Rgb(*r, *g, *b)),
                 AnsiTermStyle::FGFixed(x) => style.fg(Fixed(*x)),
 
                 AnsiTermStyle::BGBlack => style.on(Black),
@@ -93,7 +93,7 @@ impl StyleConversion for AnsiTermStyleVector {
                 AnsiTermStyle::BGPurple => style.on(Purple),
                 AnsiTermStyle::BGCyan => style.on(Cyan),
                 AnsiTermStyle::BGWhite => style.on(White),
-                AnsiTermStyle::BGrgb { r, g, b } => style.on(RGB(*r, *g, *b)),
+                AnsiTermStyle::BGrgb { r, g, b } => style.on(Rgb(*r, *g, *b)),
                 AnsiTermStyle::BGFixed(x) => style.on(Fixed(*x)),
             }
         }
@@ -208,6 +208,6 @@ mod tests {
             },
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.fg(RGB(17, 18, 19)).on(RGB(17, 18, 19))];
+        assert_eq![a.to_style(), b.fg(Rgb(17, 18, 19)).on(Rgb(17, 18, 19))];
     }
 }
