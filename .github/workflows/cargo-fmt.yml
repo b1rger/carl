@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2023 Birger Schacht <birger@rantanplan.org>
+# SPDX-License-Identifier: MIT
+
+name: Formatting check
+on: [push, pull_request]
+
+jobs:
+  cargofmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cargo fmt
+        run:
+          cargo fmt
