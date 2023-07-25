@@ -8,7 +8,7 @@ use chrono::prelude::*;
 use clap::{crate_authors, crate_name, crate_version, Parser};
 
 #[derive(Parser)]
-#[clap(version = crate_version!(), author = crate_authors!(","), about = "Display a calendar", mut_arg("version", |a| a.short('v')))]
+#[clap(version = crate_version!(), author = crate_authors!(","), about = "Display a calendar")]
 pub struct Opts {
     #[clap(short = '1', long = "one", help = "show only current month (default)", conflicts_with_all = &["three", "year"])]
     pub one: bool,
@@ -30,12 +30,12 @@ pub struct Opts {
 
     #[clap(short = 'a', long = "agenda", help = "show agenda")]
     pub agenda: bool,
-    #[clap(long = "themestyletype", help = "select dark or light theme styles", possible_values=["dark", "light"])]
+    #[clap(long = "themestyletype", help = "select dark or light theme styles", value_parser=["dark", "light"])]
     pub themestyletype: Option<String>,
-    #[clap(long = "theme", help = "select theme by name", takes_value = true)]
+    #[clap(long = "theme", help = "select theme by name", num_args(1))]
     pub theme: Option<String>,
 
-    #[clap(multiple_values = true, max_values = 3)]
+    #[clap(num_args(0..=3))]
     pub date: Vec<String>,
 }
 
