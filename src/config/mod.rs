@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-mod ansi_term_style;
+mod carlstyle;
 mod themecomponents;
 
-pub use ansi_term_style::{AnsiTermStyle, StyleConversion};
+pub use carlstyle::{AnsiTermStyle, StyleConversion};
 pub use themecomponents::{DateStyle, Style, StyleType};
 
 use crate::date::DateProperty::*;

@@ -31,7 +31,13 @@ impl fmt::Display for Agenda<'_> {
                     )
             });
             for (event, style) in eventstuple {
-                ret += format!("{} {}\n", style.stylenames.to_style().paint("·"), event).as_str();
+                ret += format!(
+                    "{}·{} {}\n",
+                    style.stylenames.to_style().render(),
+                    style.stylenames.to_style().render_reset(),
+                    event
+                )
+                .as_str();
             }
         }
         write!(f, "{}", ret)
