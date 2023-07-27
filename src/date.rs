@@ -97,8 +97,10 @@ impl fmt::Display for Date<'_> {
 
         write!(
             f,
-            "{}",
-            stylenames.to_style().paint(&dateformat).to_string()
+            "{}{}{}",
+            stylenames.to_style().render(),
+            &dateformat,
+            stylenames.to_style().render_reset()
         )
     }
 }
@@ -119,7 +121,7 @@ mod tests {
             ctx: &ctx,
             firstdayofdisplayedmonth,
         };
-        let s = String::from("\u{1b}[1;4m 1\u{1b}[0m");
+        let s = String::from("\u{1b}[1m\u{1b}[4m 1\u{1b}[0m");
         assert_eq!(format!("{}", d), s);
     }
 
@@ -179,7 +181,7 @@ mod tests {
             firstdayofdisplayedmonth,
         };
 
-        let s = String::from("\u{1b}[1;4m 1\u{1b}[0m");
+        let s = String::from("\u{1b}[1m\u{1b}[4m 1\u{1b}[0m");
         assert_eq!(format!("{}", d), s);
     }
 

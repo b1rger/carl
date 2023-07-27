@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-use nu_ansi_term::Color::*;
-use nu_ansi_term::Style;
+use anstyle::Ansi256Color;
+use anstyle::AnsiColor::*;
+use anstyle::RgbColor;
+use anstyle::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -66,35 +68,35 @@ impl StyleConversion for AnsiTermStyleVector {
                 AnsiTermStyle::Italic => style.italic(),
                 AnsiTermStyle::Underline => style.underline(),
                 AnsiTermStyle::Blink => style.blink(),
-                AnsiTermStyle::Reverse => style.reverse(),
-                AnsiTermStyle::Hidden => {
-                    let mut s = style.hidden();
-                    s.background = None;
-                    s
-                }
+                AnsiTermStyle::Reverse => style.effects(anstyle::Effects::INVERT),
+                AnsiTermStyle::Hidden => style.hidden().bg_color(None),
                 AnsiTermStyle::Strikethrough => style.strikethrough(),
 
-                AnsiTermStyle::FGBlack => style.fg(Black),
-                AnsiTermStyle::FGRed => style.fg(Red),
-                AnsiTermStyle::FGGreen => style.fg(Green),
-                AnsiTermStyle::FGYellow => style.fg(Yellow),
-                AnsiTermStyle::FGBlue => style.fg(Blue),
-                AnsiTermStyle::FGPurple => style.fg(Purple),
-                AnsiTermStyle::FGCyan => style.fg(Cyan),
-                AnsiTermStyle::FGWhite => style.fg(White),
-                AnsiTermStyle::FGrgb { r, g, b } => style.fg(Rgb(*r, *g, *b)),
-                AnsiTermStyle::FGFixed(x) => style.fg(Fixed(*x)),
+                AnsiTermStyle::FGBlack => style.fg_color(Some(Black.into())),
+                AnsiTermStyle::FGRed => style.fg_color(Some(Red.into())),
+                AnsiTermStyle::FGGreen => style.fg_color(Some(Green.into())),
+                AnsiTermStyle::FGYellow => style.fg_color(Some(Yellow.into())),
+                AnsiTermStyle::FGBlue => style.fg_color(Some(Blue.into())),
+                AnsiTermStyle::FGPurple => style.fg_color(Some(Magenta.into())),
+                AnsiTermStyle::FGCyan => style.fg_color(Some(Cyan.into())),
+                AnsiTermStyle::FGWhite => style.fg_color(Some(White.into())),
+                AnsiTermStyle::FGrgb { r, g, b } => {
+                    style.fg_color(Some(RgbColor(*r, *g, *b).into()))
+                }
+                AnsiTermStyle::FGFixed(x) => style.fg_color(Some(Ansi256Color(*x).into())),
 
-                AnsiTermStyle::BGBlack => style.on(Black),
-                AnsiTermStyle::BGRed => style.on(Red),
-                AnsiTermStyle::BGGreen => style.on(Green),
-                AnsiTermStyle::BGYellow => style.on(Yellow),
-                AnsiTermStyle::BGBlue => style.on(Blue),
-                AnsiTermStyle::BGPurple => style.on(Purple),
-                AnsiTermStyle::BGCyan => style.on(Cyan),
-                AnsiTermStyle::BGWhite => style.on(White),
-                AnsiTermStyle::BGrgb { r, g, b } => style.on(Rgb(*r, *g, *b)),
-                AnsiTermStyle::BGFixed(x) => style.on(Fixed(*x)),
+                AnsiTermStyle::BGBlack => style.bg_color(Some(Black.into())),
+                AnsiTermStyle::BGRed => style.bg_color(Some(Red.into())),
+                AnsiTermStyle::BGGreen => style.bg_color(Some(Green.into())),
+                AnsiTermStyle::BGYellow => style.bg_color(Some(Yellow.into())),
+                AnsiTermStyle::BGBlue => style.bg_color(Some(Blue.into())),
+                AnsiTermStyle::BGPurple => style.bg_color(Some(Magenta.into())),
+                AnsiTermStyle::BGCyan => style.bg_color(Some(Cyan.into())),
+                AnsiTermStyle::BGWhite => style.bg_color(Some(White.into())),
+                AnsiTermStyle::BGrgb { r, g, b } => {
+                    style.bg_color(Some(RgbColor(*r, *g, *b).into()))
+                }
+                AnsiTermStyle::BGFixed(x) => style.bg_color(Some(Ansi256Color(*x).into())),
             }
         }
         style
@@ -113,7 +115,12 @@ mod tests {
             AnsiTermStyle::BGBlack,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.bold().fg(Black).on(Black)];
+        assert_eq![
+            a.to_style(),
+            b.bold()
+                .fg_color(Some(Black.into()))
+                .bg_color(Some(Black.into()))
+        ];
     }
     #[test]
     fn test_to_style2() {
@@ -123,7 +130,12 @@ mod tests {
             AnsiTermStyle::BGRed,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.dimmed().fg(Red).on(Red)];
+        assert_eq![
+            a.to_style(),
+            b.dimmed()
+                .fg_color(Some(Red.into()))
+                .bg_color(Some(Red.into()))
+        ];
     }
     #[test]
     fn test_to_style3() {
@@ -133,7 +145,12 @@ mod tests {
             AnsiTermStyle::BGGreen,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.italic().fg(Green).on(Green)];
+        assert_eq![
+            a.to_style(),
+            b.italic()
+                .fg_color(Some(Green.into()))
+                .bg_color(Some(Green.into()))
+        ];
     }
     #[test]
     fn test_to_style4() {
@@ -143,7 +160,12 @@ mod tests {
             AnsiTermStyle::BGYellow,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.underline().fg(Yellow).on(Yellow)];
+        assert_eq![
+            a.to_style(),
+            b.underline()
+                .fg_color(Some(Yellow.into()))
+                .bg_color(Some(Yellow.into()))
+        ];
     }
     #[test]
     fn test_to_style5() {
@@ -153,7 +175,12 @@ mod tests {
             AnsiTermStyle::BGBlue,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.blink().fg(Blue).on(Blue)];
+        assert_eq![
+            a.to_style(),
+            b.blink()
+                .fg_color(Some(Blue.into()))
+                .bg_color(Some(Blue.into()))
+        ];
     }
     #[test]
     fn test_to_style6() {
@@ -163,7 +190,12 @@ mod tests {
             AnsiTermStyle::BGPurple,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.reverse().fg(Purple).on(Purple)];
+        assert_eq![
+            a.to_style(),
+            b.effects(anstyle::Effects::INVERT)
+                .fg_color(Some(Magenta.into()))
+                .bg_color(Some(Magenta.into()))
+        ];
     }
     #[test]
     fn test_to_style7() {
@@ -179,19 +211,31 @@ mod tests {
             AnsiTermStyle::BGCyan,
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.strikethrough().fg(Cyan).on(Cyan)];
+        assert_eq![
+            a.to_style(),
+            b.strikethrough()
+                .fg_color(Some(Cyan.into()))
+                .bg_color(Some(Cyan.into()))
+        ];
     }
     #[test]
     fn test_to_style9() {
         let a = vec![AnsiTermStyle::FGWhite, AnsiTermStyle::BGWhite];
         let b = Style::default();
-        assert_eq![a.to_style(), b.fg(White).on(White)];
+        assert_eq![
+            a.to_style(),
+            b.fg_color(Some(White.into())).bg_color(Some(White.into()))
+        ];
     }
     #[test]
     fn test_to_style10() {
         let a = vec![AnsiTermStyle::FGFixed(17), AnsiTermStyle::BGFixed(71)];
         let b = Style::default();
-        assert_eq![a.to_style(), b.on(Fixed(71)).fg(Fixed(17))];
+        assert_eq![
+            a.to_style(),
+            b.bg_color(Some(Ansi256Color(71).into()))
+                .fg_color(Some(Ansi256Color(17).into()))
+        ];
     }
     #[test]
     fn test_to_style11() {
@@ -208,6 +252,10 @@ mod tests {
             },
         ];
         let b = Style::default();
-        assert_eq![a.to_style(), b.fg(Rgb(17, 18, 19)).on(Rgb(17, 18, 19))];
+        assert_eq![
+            a.to_style(),
+            b.fg_color(Some(RgbColor(17, 18, 19).into()))
+                .bg_color(Some(RgbColor(17, 18, 19).into()))
+        ];
     }
 }
