@@ -138,7 +138,7 @@ styletype = 'Light'
 - `LastDayOfMonth`:
 - `IsEvent`:
 
-A sample theme file is located in [data/theme.toml](data/theme.toml).
+A sample theme file is located in [data/default.theme](data/default.theme).
 
 ## Stylenames
 
