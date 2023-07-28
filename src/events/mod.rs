@@ -7,7 +7,7 @@ extern crate ical;
 mod ics;
 pub use ics::ReadFromIcsFile;
 
-use crate::lib::types::{ChronoDate, ChronoDateTime};
+use crate::utils::{ChronoDate, ChronoDateTime};
 use chrono::prelude::*;
 use chrono::Days;
 use std::fmt;

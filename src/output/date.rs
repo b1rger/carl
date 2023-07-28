@@ -2,25 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::config::{Style, StyleConversion, StyleType};
-use crate::lib::types::ChronoDate;
-use crate::lib::DateExtensions;
+use crate::config::{DateProperty, Style, StyleType};
+use crate::utils::{convertstyle, ChronoDate, DateExtensions};
 use crate::Context;
-use serde::{Deserialize, Serialize};
 
 use std::fmt;
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub enum DateProperty {
-    FirstDayOfMonth,
-    BeforeFirstDayOfMonth,
-    BeforeCurrentDate,
-    CurrentDate,
-    AfterCurrentDate,
-    AfterLastDayOfMonth,
-    LastDayOfMonth,
-    IsEvent,
-}
 
 pub struct Date<'a> {
     pub date: ChronoDate,
@@ -95,13 +81,7 @@ impl fmt::Display for Date<'_> {
             stylenames.append(&mut style.stylenames);
         }
 
-        write!(
-            f,
-            "{}{}{}",
-            stylenames.to_style().render(),
-            &dateformat,
-            stylenames.to_style().render_reset()
-        )
+        write!(f, "{}", convertstyle(stylenames, &dateformat))
     }
 }
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::config::StyleConversion;
+use crate::utils::convertstyle;
 use crate::Context;
 use chrono::Datelike;
 
@@ -32,9 +32,8 @@ impl fmt::Display for Agenda<'_> {
             });
             for (event, style) in eventstuple {
                 ret += format!(
-                    "{}·{} {}\n",
-                    style.stylenames.to_style().render(),
-                    style.stylenames.to_style().render_reset(),
+                    "{} {}\n",
+                    convertstyle(style.stylenames.to_vec(), "·"),
                     event
                 )
                 .as_str();

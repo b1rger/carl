@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::lib::types::ChronoDate;
-use crate::lib::{DateExtensions, MonthFullWeeksIter};
+use crate::utils::{ChronoDate, DateExtensions, MonthFullWeeksIter};
 use crate::Context;
 use crate::Date;
 use chrono::{Duration, NaiveDate};
