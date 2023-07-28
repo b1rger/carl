@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::config::{Config, Style, StyleType, Theme};
+use crate::cli::Cli;
+use crate::config::{Config, Theme};
+use crate::config::{Style, StyleType};
 use crate::events::Event;
-use crate::lib::types::ChronoDate;
-use crate::opts::Opts;
+use crate::utils::ChronoDate;
 use anyhow::Result;
 use chrono::prelude::*;
 use clap::Parser;
@@ -13,7 +14,7 @@ use clap::Parser;
 // A struct storing the combined settings of config file, theme, options, ...
 pub struct Context {
     pub usersetdate: ChronoDate,
-    pub opts: Opts,
+    pub opts: Cli,
     pub config: Config,
     pub eventstuple: Vec<(Event, Style)>,
     pub theme: Theme,
@@ -22,7 +23,7 @@ pub struct Context {
 
 impl Context {
     pub fn new() -> Result<Context> {
-        let opts: Opts = Opts::parse();
+        let opts: Cli = Cli::parse();
         let config: Config = Config::read();
         let theme: Theme = if opts.theme.is_some() {
             Theme::read(&opts.theme)
@@ -57,7 +58,7 @@ impl Default for Context {
     fn default() -> Self {
         Context {
             usersetdate: NaiveDate::default(),
-            opts: Opts::default(),
+            opts: Cli::default(),
             config: Config::default(),
             eventstuple: vec![],
             theme: Theme::default(),

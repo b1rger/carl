@@ -4,9 +4,6 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::config::AnsiTermStyle;
-use crate::date::DateProperty;
-
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(default)]
 pub struct DateStyle {
@@ -33,7 +30,7 @@ pub enum StyleType {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(default)]
 pub struct Style {
-    pub stylenames: Vec<AnsiTermStyle>,
+    pub stylenames: Vec<StyleName>,
     pub weight: u32,
     pub styletype: StyleType,
 }
@@ -45,6 +42,62 @@ impl Default for Style {
             styletype: StyleType::None,
         }
     }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub enum StyleName {
+    Bold,
+    Dimmed,
+    Italic,
+    Underline,
+    Blink,
+    Reverse,
+    Hidden,
+    Strikethrough,
+
+    FGBlack,
+    FGRed,
+    FGGreen,
+    FGYellow,
+    FGBlue,
+    FGPurple,
+    FGCyan,
+    FGWhite,
+    #[serde(rename = "FGRGB")]
+    FGrgb {
+        r: u8,
+        g: u8,
+        b: u8,
+    },
+    FGFixed(u8),
+
+    BGBlack,
+    BGRed,
+    BGGreen,
+    BGYellow,
+    BGBlue,
+    BGPurple,
+    BGCyan,
+    BGWhite,
+    #[serde(rename = "BGRGB")]
+    BGrgb {
+        r: u8,
+        g: u8,
+        b: u8,
+    },
+    BGFixed(u8),
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub enum DateProperty {
+    FirstDayOfMonth,
+    BeforeFirstDayOfMonth,
+    BeforeCurrentDate,
+    CurrentDate,
+    AfterCurrentDate,
+    AfterLastDayOfMonth,
+    LastDayOfMonth,
+    IsEvent,
 }
 
 #[cfg(test)]

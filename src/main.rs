@@ -2,14 +2,12 @@
 //
 // SPDX-License-Identifier: MIT
 
-mod agenda;
-mod calendar;
+mod cli;
 mod config;
 mod context;
-mod date;
 mod events;
-mod lib;
-mod opts;
+mod output;
+mod utils;
 
 extern crate clap;
 extern crate serde;
@@ -18,14 +16,12 @@ extern crate xdg;
 use chrono::Duration;
 use std::process;
 
-use agenda::Agenda;
-use calendar::Calendar;
 use context::Context;
-use date::Date;
-use events::Events;
-use events::ReadFromIcsFile;
-use lib::types::ChronoDate;
-use lib::DateExtensions;
+use events::{Events, ReadFromIcsFile};
+use output::agenda::Agenda;
+use output::calendar::Calendar;
+use output::date::Date;
+use utils::{ChronoDate, DateExtensions};
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
