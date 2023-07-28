@@ -5,6 +5,7 @@
 use crate::config::{DateProperty, Style, StyleType};
 use crate::utils::{convertstyle, ChronoDate, DateExtensions};
 use crate::Context;
+use chrono::Datelike;
 
 use std::fmt;
 
@@ -29,6 +30,15 @@ impl Date<'_> {
                 self.date == self.firstdayofdisplayedmonth.last_day_of_month()
             }
             DateProperty::IsEvent => self.is_event(),
+            DateProperty::Monday => self.date.weekday() == chrono::Weekday::Mon,
+            DateProperty::Tuesday => self.date.weekday() == chrono::Weekday::Tue,
+            DateProperty::Wednesday => self.date.weekday() == chrono::Weekday::Wed,
+            DateProperty::Thursday => self.date.weekday() == chrono::Weekday::Thu,
+            DateProperty::Friday => self.date.weekday() == chrono::Weekday::Fri,
+            DateProperty::Saturday => self.date.weekday() == chrono::Weekday::Sat,
+            DateProperty::Sunday => self.date.weekday() == chrono::Weekday::Sun,
+            DateProperty::Odd => self.date.day() % 2 == 1,
+            DateProperty::Even => self.date.day() % 2 == 0,
         })
     }
 

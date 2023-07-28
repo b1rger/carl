@@ -98,6 +98,15 @@ pub enum DateProperty {
     AfterLastDayOfMonth,
     LastDayOfMonth,
     IsEvent,
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+    Odd,
+    Even,
 }
 
 #[cfg(test)]
