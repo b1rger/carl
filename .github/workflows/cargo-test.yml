@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2023 Birger Schacht <birger@rantanplan.org>
+# SPDX-License-Identifier: MIT
+
+name: Run tests
+on: [push, pull_request]
+
+jobs:
+  cargotest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cargo test
+        run:
+          TZ='GST-1' cargo test
