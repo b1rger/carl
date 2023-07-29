@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 # carl
 
-![carl logo](https://codeberg.org/birger/carl/media/branch/main/data/logo.svg)
+![carl logo](https://raw.githubusercontent.com/b1rger/carl/main/data/logo.svg)
 
 `carl` is a calendar for the commandline. It tries to mimic the various
 `cal(1)` implementations out there, but also adds enhanced features like colors
@@ -25,22 +25,32 @@ Default output of `carl`
 
 `carl` output with custom colors
 
-</th><th>
+</th></tr>
+<tr><td>
+
+![Screenshots of default carl](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-default.png)
+
+</td><td>
+
+![Screenshot of carl with custom colors](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-custom.png)
+
+</td></tr>
+<tr><th>
 
 `carl` output with events<br/>from ical highlighted
+
+</th><th>
+
+`carl` output with rainbow<br/>colored weekdays
 
 </th></tr>
 <tr><td>
 
-![Screenshots of default carl](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-default.png)
+![Screenshot of carl with ical events highlighted](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-ical.png)
 
 </td><td>
 
-![Screenshot of carl with custom colors](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-custom.png)
-
-</td><td>
-
-![Screenshot of carl with ical events highlighted](https://codeberg.org/birger/carl/media/branch/main/data/screenshot-ical.png)
+![Screenshot of carl in rainbow colors with ical events highlighted and current date striken through](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-rainbow.png)
 
 </td></tr>
 </table>
@@ -129,14 +139,23 @@ styletype = 'Light'
 
 #### Possible properties
 
-- `FirstDayOfMonth`:
-- `BeforeFirstDayOfMonth`:
-- `BeforeCurrentDate`:
-- `CurrentDate`:
-- `AfterCurrentDate`:
-- `AfterLastDayOfMonth`:
-- `LastDayOfMonth`:
-- `IsEvent`:
+- `FirstDayOfMonth`
+- `BeforeFirstDayOfMonth`
+- `BeforeCurrentDate`
+- `CurrentDate`
+- `AfterCurrentDate`
+- `AfterLastDayOfMonth`
+- `LastDayOfMonth`
+- `IsEvent`
+- `Monday`
+- `Tuesday`
+- `Wednesday`
+- `Thursday`
+- `Friday`
+- `Saturday`
+- `Sunday`
+- `Even`
+- `Odd`
 
 A sample theme file is located in [data/default.theme](data/default.theme).
 
