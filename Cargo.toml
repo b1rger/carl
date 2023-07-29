@@ -6,9 +6,9 @@ version = "0.1.0"
 authors = ["Birger Schacht <birger@rantanplan.org>"]
 edition = "2021"
 license = "MIT"
-description = "carl is a commandline calendar"
-repository = "https://codeberg.org/birger/carl"
-keywords = ["calendar", "ical", "cli", "date", "cal"]
+description = "A colorful commandline calendar with ical support. Similar to `cal`, but with features."
+repository = "https://github.com/b1rger/carl"
+keywords = ["calendar", "ical", "cli", "date", "cal", "colors"]
 categories = ["command-line-utilities", "date-and-time"]
 
 [dependencies]
