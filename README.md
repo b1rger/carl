@@ -2,11 +2,9 @@
 SPDX-FileCopyrightText: 2021-2023 Birger Schacht <birger@rantanplan.org>
 SPDX-License-Identifier: MIT
 -->
-<div align="center">
+<div align="center" markdown="1">
 
-# carl
-
-![carl logo](https://raw.githubusercontent.com/b1rger/carl/main/data/logo.svg)
+![carl](https://raw.githubusercontent.com/b1rger/carl/main/data/logo.svg)
 
 `carl` is a calendar for the commandline. It tries to mimic the various
 `cal(1)` implementations out there, but also adds enhanced features like colors
@@ -17,38 +15,38 @@ and ical support.
 ---
 
 <table style="table-layout: fixed; width: 100%;">
-<tr><th>
+<tr><th markdown="1">
 
 Default output of `carl`
 
-</th><th>
+</th><th markdown="1">
 
 `carl` output with custom colors
 
 </th></tr>
-<tr><td>
+<tr><td markdown="1">
 
 ![Screenshots of default carl](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-default.png)
 
-</td><td>
+</td><td markdown="1">
 
 ![Screenshot of carl with custom colors](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-custom.png)
 
 </td></tr>
-<tr><th>
+<tr><th markdown="1">
 
 `carl` output with events<br/>from ical highlighted
 
-</th><th>
+</th><th markdown="1">
 
 `carl` output with rainbow<br/>colored weekdays
 
 </th></tr>
-<tr><td>
+<tr><td markdown="1">
 
 ![Screenshot of carl with ical events highlighted](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-ical.png)
 
-</td><td>
+</td><td markdown="1">
 
 ![Screenshot of carl in rainbow colors with ical events highlighted and current date striken through](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-rainbow.png)
 
