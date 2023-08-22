@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2023 Birger Schacht <birger@rantanplan.org>
+# SPDX-License-Identifier: MIT
+#
+on: push
+name: Clippy check
+
+env:
+  RUSTFLAGS: "-Dwarnings"
+
+jobs:
+  clippy_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
