@@ -65,10 +65,7 @@ fn main() {
     // mabye we should use a pointer instead of cloning the style?
     for icalstyle in &ctx.config.ical {
         let mut icsevents = Events::read_from_ics_file(&icalstyle.file);
-        icsevents = icsevents
-            .into_iter()
-            .filter(|event| event.in_range(daterangebegin, daterangeend))
-            .collect();
+        icsevents.retain(|event| event.in_range(daterangebegin, daterangeend));
         for event in icsevents {
             ctx.eventstuple.push((event, icalstyle.style.clone()));
         }

@@ -110,7 +110,7 @@ impl fmt::Display for Event {
             f,
             "{}: {}",
             startformatstring,
-            self.summary.replace("\\", "")
+            self.summary.replace('\\', "")
         )
     }
 }

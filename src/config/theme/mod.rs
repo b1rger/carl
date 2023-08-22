@@ -25,7 +25,7 @@ impl Theme {
                     if let Some(theme_path) =
                         xdg_dirs.find_config_file(format!("{}.theme", themename))
                     {
-                        let theme_content = fs::read_to_string(&theme_path).unwrap_or_default();
+                        let theme_content = fs::read_to_string(theme_path).unwrap_or_default();
                         match toml::from_str(&theme_content) {
                             Ok(theme) => return theme,
                             Err(e) => eprintln!("Could not parse theme file: {}", e),

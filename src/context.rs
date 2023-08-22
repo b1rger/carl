@@ -37,11 +37,10 @@ impl Context {
             StyleType::Light
         };
 
-        let usersetdate: ChronoDate;
-        match opts.validate_date() {
-            Ok(x) => usersetdate = x,
+        let usersetdate: ChronoDate = match opts.validate_date() {
+            Ok(x) => x,
             Err(x) => return Err(x),
-        }
+        };
 
         Ok(Context {
             usersetdate,
