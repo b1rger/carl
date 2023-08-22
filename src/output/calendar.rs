@@ -166,8 +166,10 @@ mod tests {
 
     #[test]
     fn test_calendar_year_fmt() {
-        let mut ctx = Context::default();
-        ctx.usersetdate = NaiveDate::from_ymd_opt(2021, 12, 10).unwrap();
+        let mut ctx = Context {
+            usersetdate: NaiveDate::from_ymd_opt(2021, 12, 10).unwrap(),
+            ..Default::default()
+        };
         ctx.opts.year = true;
 
         let mut dates: Vec<ChronoDate> = vec![];
