@@ -12,20 +12,11 @@ use clap::crate_name;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 #[serde(default)]
 pub struct Config {
     pub theme: Option<String>,
     pub ical: Vec<IcalStyle>,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Config {
-            theme: None,
-            ical: vec![],
-        }
-    }
 }
 
 impl Config {
@@ -34,7 +25,7 @@ impl Config {
         match xdg::BaseDirectories::with_prefix(crate_name!()) {
             Ok(xdg_dirs) => {
                 if let Some(config_path) = xdg_dirs.find_config_file("config.toml") {
-                    let config_content = fs::read_to_string(&config_path).unwrap_or_default();
+                    let config_content = fs::read_to_string(config_path).unwrap_or_default();
                     match toml::from_str(&config_content) {
                         Ok(config) => return config,
                         Err(e) => eprintln!("Could not parse config file: {}", e),

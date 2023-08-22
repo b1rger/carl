@@ -4,20 +4,12 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 #[serde(default)]
 pub struct DateStyle {
     pub properties: Vec<DateProperty>,
     #[serde(flatten)]
     pub style: Style,
-}
-impl Default for DateStyle {
-    fn default() -> Self {
-        DateStyle {
-            properties: vec![],
-            style: Style::default(),
-        }
-    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]

@@ -107,11 +107,9 @@ impl ReadFromIcsFile for Events {
         let path = Path::new(filepath);
         if path.is_dir() {
             if let Ok(path) = path.read_dir() {
-                for entry in path {
-                    if let Ok(entry) = entry {
-                        if entry.path().is_file() {
-                            filepaths.push(entry.path());
-                        }
+                for entry in path.flatten() {
+                    if entry.path().is_file() {
+                        filepaths.push(entry.path());
                     }
                 }
             } else {

@@ -54,19 +54,18 @@ impl Date<'_> {
 
 impl fmt::Display for Date<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let dateformat: String;
-
-        if self.ctx.opts.julian {
-            dateformat = format!("{:>3}", self.date.format("%j"));
+        let dateformat: String = if self.ctx.opts.julian {
+            format!("{:>3}", self.date.format("%j"))
         } else {
-            dateformat = format!("{:>2}", self.date.format("%e"));
-        }
+            format!("{:>2}", self.date.format("%e"))
+        };
 
         let mut styles: Vec<Style> = self
             .ctx
             .theme
             .date
-            .to_vec()
+            .iter()
+            .cloned()
             .into_iter()
             .filter(|datestyle| self.satisfy_all(&datestyle.properties))
             .map(|datestyle| datestyle.style)
@@ -78,12 +77,9 @@ impl fmt::Display for Date<'_> {
             }
         }
 
-        styles = styles
-            .into_iter()
-            .filter(|style| {
-                style.styletype == self.ctx.styletype || style.styletype == StyleType::None
-            })
-            .collect();
+        styles.retain(|style| {
+            style.styletype == self.ctx.styletype || style.styletype == StyleType::None
+        });
 
         styles.sort_by(|a, b| a.weight.cmp(&b.weight));
         let mut stylenames = vec![];
