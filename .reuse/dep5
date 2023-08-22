@@ -13,3 +13,15 @@ License: CC0-1.0
 Files: CHANGELOG.md
 Copyright: 2023 Birger Schacht <birger@rantanplan.org>
 License: CC0-1.0
+
+Files: CNAME
+Copyright: 2023 Birger Schacht <birger@rantanplan.org>
+License: CC0-1.0
+
+Files: _config.yml
+Copyright: 2023 Birger Schacht <birger@rantanplan.org>
+License: CC0-1.0
+
+Files: .github/*
+Copyright: 2023 Birger Schacht <birger@rantanplan.org>
+License: CC0-1.0
