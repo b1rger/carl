@@ -134,23 +134,29 @@ mod tests {
     }
     #[test]
     fn test_event_is_yearly_day() {
-        let mut event = Event::default();
-        event.frequency = EventFrequency::Yearly;
         let date = NaiveDate::default();
-        event.end = Some(EventDateTime::Date(date));
+        let event = Event {
+            frequency: EventFrequency::Yearly,
+            end: Some(EventDateTime::Date(date)),
+            ..Default::default()
+        };
         assert!(event.is_day(&date));
     }
     #[test]
     fn test_event_is_monthy_day() {
-        let mut event = Event::default();
-        event.frequency = EventFrequency::Monthly;
+        let event = Event {
+            frequency: EventFrequency::Monthly,
+            ..Default::default()
+        };
         let date = NaiveDate::default();
         assert!(event.is_day(&date));
     }
     #[test]
     fn test_event_is_daily_day() {
-        let mut event = Event::default();
-        event.frequency = EventFrequency::Daily;
+        let event = Event {
+            frequency: EventFrequency::Daily,
+            ..Default::default()
+        };
         let date = NaiveDate::default();
         assert!(event.is_day(&date));
     }
@@ -163,25 +169,31 @@ mod tests {
     }*/
     #[test]
     fn test_event_get_end_date_case2() {
-        let mut event = Event::default();
         let date = NaiveDate::default();
-        event.start = EventDateTime::Date(date);
-        event.end = Some(EventDateTime::Date(date));
+        let event = Event {
+            start: EventDateTime::Date(date),
+            end: Some(EventDateTime::Date(date)),
+            ..Default::default()
+        };
         assert_eq!(event.get_end_date(), date);
     }
     #[test]
     fn test_event_get_end_date_case3() {
-        let mut event = Event::default();
         let date = NaiveDate::default();
-        event.start = EventDateTime::Date(date);
-        event.end = Some(EventDateTime::Date(date + Days::new(1)));
+        let event = Event {
+            start: EventDateTime::Date(date),
+            end: Some(EventDateTime::Date(date + Days::new(1))),
+            ..Default::default()
+        };
         assert_eq!(event.get_end_date(), date);
     }
     #[test]
     fn test_event_fmt_date() {
-        let mut event = Event::default();
         let date = NaiveDate::default();
-        event.start = EventDateTime::Date(date);
+        let event = Event {
+            start: EventDateTime::Date(date),
+            ..Default::default()
+        };
         assert_eq!(
             format!("{}", event),
             String::from("Thu, Jan,  1: Default Event")

@@ -154,8 +154,10 @@ mod tests {
     #[test]
     fn test_validate_date_default_to_now_with_custom_year() {
         let today: ChronoDate = Local::now().date_naive().with_year(2007).unwrap();
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007")],
+            ..Default::default()
+        };
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
@@ -166,8 +168,10 @@ mod tests {
             .unwrap()
             .with_month(1)
             .unwrap();
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007"), String::from("1")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007"), String::from("1")],
+            ..Default::default()
+        };
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
@@ -180,75 +184,93 @@ mod tests {
             .unwrap()
             .with_day(28)
             .unwrap();
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007"), String::from("1"), String::from("28")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007"), String::from("1"), String::from("28")],
+            ..Default::default()
+        };
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
     fn test_validate_date_defaults_to_now_with_ambiguous_arguments() {
         let today: ChronoDate = Local::now().date_naive();
-        let mut o: Cli = Cli::default();
-        o.date = vec![
-            String::from("2007"),
-            String::from("1"),
-            String::from("28"),
-            String::from("28"),
-        ];
+        let o: Cli = Cli {
+            date: vec![
+                String::from("2007"),
+                String::from("1"),
+                String::from("28"),
+                String::from("28"),
+            ],
+            ..Default::default()
+        };
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
     fn test_validate_date_errors_with_wrong_month() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007"), String::from("13"), String::from("28")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007"), String::from("13"), String::from("28")],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_wrong_day() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007"), String::from("11"), String::from("33")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007"), String::from("11"), String::from("33")],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_wrong_year() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![
-            String::from("999999"),
-            String::from("11"),
-            String::from("28"),
-        ];
+        let o: Cli = Cli {
+            date: vec![
+                String::from("999999"),
+                String::from("11"),
+                String::from("28"),
+            ],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_unparsable_year() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("foo"), String::from("13"), String::from("28")];
+        let o: Cli = Cli {
+            date: vec![String::from("foo"), String::from("13"), String::from("28")],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_unparsable_month() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![
-            String::from("2007"),
-            String::from("foo"),
-            String::from("23"),
-        ];
+        let o: Cli = Cli {
+            date: vec![
+                String::from("2007"),
+                String::from("foo"),
+                String::from("23"),
+            ],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_unparsable_day() {
-        let mut o: Cli = Cli::default();
-        o.date = vec![
-            String::from("2007"),
-            String::from("11"),
-            String::from("foo"),
-        ];
+        let o: Cli = Cli {
+            date: vec![
+                String::from("2007"),
+                String::from("11"),
+                String::from("foo"),
+            ],
+            ..Default::default()
+        };
         assert!(o.validate_date().is_err());
     }
     #[test]
     fn test_validate_date_errors_with_non_existent_date() {
         let today: ChronoDate = Local::now().date_naive();
-        let mut o: Cli = Cli::default();
-        o.date = vec![String::from("2007"), String::from("2"), String::from("30")];
+        let o: Cli = Cli {
+            date: vec![String::from("2007"), String::from("2"), String::from("30")],
+            ..Default::default()
+        };
         assert_eq!(today, o.validate_date().unwrap());
     }
 }
