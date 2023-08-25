@@ -73,6 +73,7 @@ cargo install carl
 - **-h**, **--help**: Display help screen and exit.
 - **--theme**: Set the theme that should be used
 - **--themestyletype**: "dark" or "light", use the theme styles marked for "dark" or for "light" backgrounds. Defaults to "light"
+- **-a**, **--agenda**: Display agenda (a listing of all the events that occur in the the displayed calendar timespan) below the calendar
 
 ## Commandline options
 
@@ -82,28 +83,47 @@ cargo install carl
 
 ## Configuration file
 
+
 The configuration file is located `XDG_CONFIG_DIRS/carl/config.toml` or `XDG_CONFIG_HOME/.carl/config.toml` (the latter has precedence).
+It can be used to define the name of a themefile as well as one or more icalfiles.
 
-The configuration file can define the name of a themefile and multiple icalfiles.
-Themefiles contain listings of date properties together with styledefintions.
-Icalfile listings contain paths to icalfiles together with styledefinitions.
+A sample configuration file is located in [data/config.toml](data/config.toml).
 
-The name of a them is simple specified using the `theme = ` setting:
-```
-theme = "default"
-```
-The themefile is read from `XDG_CONFIG_DIRS/carl/<themename>.toml` or `XDG_CONFIG_HOME/.carl/<themename>.toml` (the latter has precedence).
+### Ical Files
 
-Icalfiles can be specified using the `[[ical]]` setting:
+Icalfile listings contain paths to icalfiles and can be combined with their own
+styledefinitions. All the events from those icalfiles are then highlighted
+using either the `IsEvent` property (see below) or using the style defined
+togehter with the ical listing.
+
+When using the `-a` or `--agenda` switch, the event summary is displayed below
+the calendar in a bullet list, with the bullet also highlighted with the
+corresponding style.
+
+<div align="center" markdown="1">
+
+![Screeshot of carl with agenda](https://raw.githubusercontent.com/b1rger/carl/main/data/screenshot-agenda.png)
+
+</div>
+
+Icalfile listings can be specified using the `[[ical]]` setting:
 ```
 [[ical]]
 file = "/home/user/birthdays.ics"
 stylenames = ['FGPurple']
 ```
 
-If the `file` setting points to a directory, `carl` uses all the files in that directory it can parse.
+If the `file` setting points to a directory, `carl` uses all the files in the directory it can parse.
 
-A sample configuration file is located in [data/config.toml](data/config.toml).
+### Themefile
+
+Themefiles contain listings of date properties together with styledefintions.
+
+The name of a theme is simple specified using the `theme = ` setting:
+```
+theme = "default"
+```
+The themefile is read from `XDG_CONFIG_DIRS/carl/<themename>.toml` or `XDG_CONFIG_HOME/.carl/<themename>.toml` (the latter has precedence).
 
 ### Styles
 
