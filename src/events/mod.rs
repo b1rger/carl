@@ -50,7 +50,19 @@ impl Default for Event {
 
 impl Event {
     pub fn is_day(&self, date: &ChronoDate) -> bool {
-        self.in_range(*date, *date)
+        let start = self.get_start_date();
+        let end = self.get_end_date();
+
+        match self.frequency {
+            EventFrequency::Weekly => {
+                start <= *date
+                    && start.weekday().num_days_from_monday()
+                        <= date.weekday().num_days_from_monday()
+                    && date.weekday().num_days_from_monday() <= end.weekday().num_days_from_monday()
+            }
+            EventFrequency::Daily => start <= *date && *date <= end,
+            _ => self.in_range(*date, *date),
+        }
     }
 
     pub fn in_range(&self, daterangebegin: ChronoDate, daterangeend: ChronoDate) -> bool {
@@ -67,8 +79,7 @@ impl Event {
             EventFrequency::Monthly => {
                 daterangebegin.day() <= start.day() && end.day() <= daterangeend.day()
             }
-            EventFrequency::Daily => true,
-            EventFrequency::Weekly => todo!(),
+            EventFrequency::Weekly | EventFrequency::Daily => true,
             _ => daterangebegin <= start && end <= daterangeend,
         }
     }
