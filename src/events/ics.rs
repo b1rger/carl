@@ -6,6 +6,7 @@ extern crate ical;
 
 use crate::events::{Event, EventDateTime, EventFrequency, Events};
 use chrono::prelude::*;
+use chrono_tz::Tz;
 use ical::parser::ical::component::IcalEvent;
 use std::fs::File;
 use std::io::BufReader;
@@ -34,20 +35,38 @@ impl TryFrom<ical::property::Property> for EventDateTime {
     type Error = &'static str;
 
     fn try_from(property: ical::property::Property) -> Result<Self, Self::Error> {
-        if let Some(x) = property.value {
-            if let Some(y) = property.params {
-                if y.iter().any(|(paramname, params)| {
-                    paramname == "VALUE" && params.contains(&"DATE".to_string())
+        if let Some(value) = property.value {
+            if let Some(params) = property.params {
+                // DATE
+                if params.iter().any(|(paramname, paramvalues)| {
+                    paramname == "VALUE" && paramvalues.contains(&"DATE".to_string())
                 }) {
-                    if let Ok(naive_date) = NaiveDate::parse_from_str(&x, "%Y%m%d") {
+                    if let Ok(naive_date) = NaiveDate::parse_from_str(&value, "%Y%m%d") {
                         return Ok(EventDateTime::Date(naive_date));
                     }
-                } else if let Ok(naive_datetime) =
-                    NaiveDateTime::parse_from_str(&x, "%Y%m%dT%H%M%S")
-                {
-                    if let Some(x) = Local.from_local_datetime(&naive_datetime).single() {
-                        return Ok(EventDateTime::DateTime(x));
+                }
+                // DATETIME FORM 3: DATE WITH TIMEZONE
+                for (paramname, paramvalues) in params {
+                    if paramname == "TZID" {
+                        if let Some(timezone) = paramvalues.first() {
+                            if let Ok(tz) = timezone.parse::<Tz>() {
+                                if let Ok(datetime) = tz.datetime_from_str(&value, "%Y%m%dT%H%M%S")
+                                {
+                                    return Ok(EventDateTime::DateTime(
+                                        datetime.with_timezone(&Local),
+                                    ));
+                                }
+                            }
+                        }
+                        return Err("Could not parse ical timezone parameter.");
                     }
+                }
+                // DATETIME FORM 2: DATE WITH UTC TIME
+                if let Ok(datetime) = Utc.datetime_from_str(&value, "%Y%m%dT%H%M%SZ") {
+                    return Ok(EventDateTime::DateTime(datetime.into()));
+                // DATETIME FORM 1: DATE WITH LOCAL TIME
+                } else if let Ok(datetime) = Local.datetime_from_str(&value, "%Y%m%dT%H%M%S") {
+                    return Ok(EventDateTime::DateTime(datetime));
                 }
             }
         }
