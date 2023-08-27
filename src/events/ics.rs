@@ -4,31 +4,14 @@
 
 extern crate ical;
 
-use crate::events::{Event, EventDateTime, EventFrequency, Events};
+use crate::events::{Event, EventDateTime, Events};
+use crate::utils::DateRange;
 use chrono::prelude::*;
 use ical::parser::ical::component::IcalEvent;
+use rrule::RRuleSet;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
-
-impl From<ical::property::Property> for EventFrequency {
-    fn from(property: ical::property::Property) -> Self {
-        let mut ret = EventFrequency::None;
-        if let Some(values) = property.value {
-            let values = values.split(';');
-            for val in values {
-                match val {
-                    "FREQ=YEARLY" => ret = EventFrequency::Yearly,
-                    "FREQ=MONTHLY" => ret = EventFrequency::Monthly,
-                    "FREQ=WEEKLY" => ret = EventFrequency::Weekly,
-                    "FREQ=DAILY" => ret = EventFrequency::Daily,
-                    _ => (),
-                }
-            }
-        }
-        ret
-    }
-}
 
 impl TryFrom<ical::property::Property> for EventDateTime {
     type Error = &'static str;
@@ -62,7 +45,8 @@ impl TryFrom<IcalEvent> for Event {
         let mut start: Option<EventDateTime> = None;
         let mut end: Option<EventDateTime> = None;
         let mut summary: String = String::new();
-        let mut frequency: EventFrequency = EventFrequency::None;
+        let mut rrulesets: Vec<RRuleSet> = vec![];
+        let mut rrule: Option<String> = None;
         for property in event.properties {
             match property.name.as_ref() {
                 "DTSTART" => {
@@ -77,17 +61,33 @@ impl TryFrom<IcalEvent> for Event {
                     }
                 }
                 "RRULE" => {
-                    frequency = EventFrequency::from(property);
+                    if let Some(value) = property.value {
+                        rrule = Some(format!("RRULE:{}", value));
+                    }
                 }
                 _ => {}
             }
         }
         if let Some(x) = start {
+            if let Some(rrule) = rrule {
+                let end = match end {
+                    Some(y) => y,
+                    _ => x,
+                };
+                for date in DateRange(
+                    x.date() - chrono::Duration::days(1),
+                    end.date() - chrono::Duration::days(1),
+                ) {
+                    let rrulestr =
+                        format!("DTSTART;VALUE=DATE:{}\n{}", date.format("%Y%m%d"), rrule);
+                    rrulesets.push(rrulestr.parse().unwrap());
+                }
+            }
             Ok(Event {
                 start: x,
                 end,
-                frequency,
                 summary,
+                rrulesets,
             })
         } else {
             Err("Could not parse ical event.")
@@ -145,42 +145,6 @@ mod tests {
     use chrono::{Local, TimeZone};
 
     #[test]
-    fn test_property_to_frequency_yearly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=YEARLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Yearly);
-    }
-    #[test]
-    fn test_property_to_frequency_monthly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=MONTHLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Monthly);
-    }
-    #[test]
-    fn test_property_to_frequency_weekly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=WEEKLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Weekly);
-    }
-    #[test]
-    fn test_property_to_frequency_daily() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=DAILY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Daily);
-    }
-    #[test]
     fn test_property_to_eventdatetime_1() {
         let property: ical::property::Property = ical::property::Property {
             name: String::from("DTSTART"),
@@ -227,11 +191,6 @@ mod tests {
             params: Some(vec![]),
             value: Some(String::from("19700101T010130")),
         };
-        let frequency: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=YEARLY")),
-        };
         let summary: ical::property::Property = ical::property::Property {
             name: String::from("SUMMARY"),
             params: None,
@@ -239,7 +198,7 @@ mod tests {
         };
         let icalevent: IcalEvent = IcalEvent {
             alarms: vec![],
-            properties: vec![dtstart, dtend, frequency, summary],
+            properties: vec![dtstart, dtend, summary],
         };
         assert!(Event::try_from(icalevent).is_ok());
     }

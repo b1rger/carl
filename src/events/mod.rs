@@ -7,19 +7,11 @@ extern crate ical;
 mod ics;
 pub use ics::ReadFromIcsFile;
 
-use crate::utils::{ChronoDate, ChronoDateTime};
+use crate::utils::{ChronoDate, ChronoDateTime, DateRange};
 use chrono::prelude::*;
 use chrono::Days;
+use rrule::RRuleSet;
 use std::fmt;
-
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub enum EventFrequency {
-    Yearly,
-    Monthly,
-    Weekly,
-    Daily,
-    None,
-}
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum EventDateTime {
@@ -27,12 +19,21 @@ pub enum EventDateTime {
     Date(ChronoDate),
 }
 
+impl EventDateTime {
+    fn date(self) -> NaiveDate {
+        match self {
+            EventDateTime::DateTime(x) => x.date_naive(),
+            EventDateTime::Date(x) => x,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Event {
     pub start: EventDateTime,
     pub end: Option<EventDateTime>,
-    pub frequency: EventFrequency,
     pub summary: String,
+    pub rrulesets: Vec<RRuleSet>,
 }
 
 pub type Events = Vec<Event>;
@@ -42,46 +43,34 @@ impl Default for Event {
         Event {
             start: EventDateTime::Date(NaiveDate::default()),
             end: None,
-            frequency: EventFrequency::None,
             summary: String::from("Default Event"),
+            rrulesets: vec![],
         }
     }
 }
 
 impl Event {
     pub fn is_day(&self, date: &ChronoDate) -> bool {
-        let start = self.get_start_date();
-        let end = self.get_end_date();
-
-        match self.frequency {
-            EventFrequency::Weekly => {
-                start <= *date
-                    && start.weekday().num_days_from_monday()
-                        <= date.weekday().num_days_from_monday()
-                    && date.weekday().num_days_from_monday() <= end.weekday().num_days_from_monday()
-            }
-            EventFrequency::Daily => start <= *date && *date <= end,
-            _ => self.in_range(*date, *date),
-        }
+        self.in_range(*date, *date)
     }
 
     pub fn in_range(&self, daterangebegin: ChronoDate, daterangeend: ChronoDate) -> bool {
+        for rruleset in &self.rrulesets {
+            let rresult = rruleset.clone().all(365);
+            let resultdates: Vec<NaiveDate> =
+                rresult.dates.iter().map(|date| date.date_naive()).collect();
+
+            let mut rangedates: Vec<NaiveDate> = DateRange(daterangebegin, daterangeend).collect();
+            rangedates.push(daterangebegin);
+
+            if rangedates.iter().any(|&x| resultdates.contains(&x)) {
+                return true;
+            }
+        }
+
         let start = self.get_start_date();
         let end = self.get_end_date();
-
-        match self.frequency {
-            EventFrequency::Yearly => {
-                daterangebegin.day() <= start.day()
-                    && daterangebegin.month() <= start.month()
-                    && end.month() <= daterangeend.month()
-                    && end.day() <= daterangeend.day()
-            }
-            EventFrequency::Monthly => {
-                daterangebegin.day() <= start.day() && end.day() <= daterangeend.day()
-            }
-            EventFrequency::Weekly | EventFrequency::Daily => true,
-            _ => daterangebegin <= start && end <= daterangeend,
-        }
+        daterangebegin <= start && end <= daterangeend
     }
 
     pub fn get_start_date(&self) -> ChronoDate {
@@ -147,7 +136,6 @@ mod tests {
     fn test_event_is_yearly_day() {
         let date = NaiveDate::default();
         let event = Event {
-            frequency: EventFrequency::Yearly,
             end: Some(EventDateTime::Date(date)),
             ..Default::default()
         };
@@ -155,19 +143,13 @@ mod tests {
     }
     #[test]
     fn test_event_is_monthy_day() {
-        let event = Event {
-            frequency: EventFrequency::Monthly,
-            ..Default::default()
-        };
+        let event = Event::default();
         let date = NaiveDate::default();
         assert!(event.is_day(&date));
     }
     #[test]
     fn test_event_is_daily_day() {
-        let event = Event {
-            frequency: EventFrequency::Daily,
-            ..Default::default()
-        };
+        let event = Event::default();
         let date = NaiveDate::default();
         assert!(event.is_day(&date));
     }
