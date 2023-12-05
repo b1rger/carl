@@ -18,5 +18,5 @@ clap = { version = "4.4.11", features = ["derive", "cargo"] }
 toml = "0.8.*"
 serde = { version = "1.0", features = ["derive"] }
 xdg = "2.5.2"
-ical = "0.8.*"
+ical = "0.9.*"
 anstyle = "1.0.4"
