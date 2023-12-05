@@ -65,8 +65,8 @@ impl fmt::Display for Date<'_> {
             .theme
             .date
             .iter()
-            .cloned()
             .filter(|datestyle| self.satisfy_all(&datestyle.properties))
+            .cloned()
             .map(|datestyle| datestyle.style)
             .collect();
 
