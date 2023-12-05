@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/b1rger/carl/compare/v0.1.1...v0.1.2) (2023-12-05)
+
+
+### Bug Fixes
+
+* drop `colors` keyword, because there can only be 5 keywords ([b1ad930](https://github.com/b1rger/carl/commit/b1ad9300ee28438ad07e3f6a7b9093e28ecf2a9b))
+
 ## [0.1.1](https://github.com/b1rger/carl/compare/v0.1.0...v0.1.1) (2023-12-05)
 
 
