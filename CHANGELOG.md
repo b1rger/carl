@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.1](https://github.com/b1rger/carl/compare/v0.1.0...v0.1.1) (2023-12-05)
+
+
+### Bug Fixes
+
+* **cargo:** update metadata in Cargo.toml ([42159e1](https://github.com/b1rger/carl/commit/42159e1ef57e9eee4db468da9e4d47e0ff7c3b72))
+* don't crash when dealing with weekly events ([5108474](https://github.com/b1rger/carl/commit/5108474b2fa6b198d32990433bc6285b0e344eaa)), closes [#46](https://github.com/b1rger/carl/issues/46)
+* unnecessarily eager cloning of iterator items ([bdc334b](https://github.com/b1rger/carl/commit/bdc334b524b9fb573051d35574137bbc98670fd6))
+
 ## [0.1.0](https://github.com/b1rger/carl/compare/v0.0.4...v0.1.0) (2023-07-29)
 
 
