@@ -2,59 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-extern crate ical;
-
 use crate::events::{Event, EventDateTime, EventFrequency, Events};
 use chrono::prelude::*;
-use ical::parser::ical::component::IcalEvent;
 use icalendar::{Calendar, Component, Event as IcalendarEvent};
-use std::fs::File;
-use std::io::BufReader;
 use std::path::{Path, PathBuf};
-
-impl From<ical::property::Property> for EventFrequency {
-    fn from(property: ical::property::Property) -> Self {
-        let mut ret = EventFrequency::None;
-        if let Some(values) = property.value {
-            let values = values.split(';');
-            for val in values {
-                match val {
-                    "FREQ=YEARLY" => ret = EventFrequency::Yearly,
-                    "FREQ=MONTHLY" => ret = EventFrequency::Monthly,
-                    "FREQ=WEEKLY" => ret = EventFrequency::Weekly,
-                    "FREQ=DAILY" => ret = EventFrequency::Daily,
-                    _ => (),
-                }
-            }
-        }
-        ret
-    }
-}
-
-impl TryFrom<ical::property::Property> for EventDateTime {
-    type Error = &'static str;
-
-    fn try_from(property: ical::property::Property) -> Result<Self, Self::Error> {
-        if let Some(x) = property.value {
-            if let Some(y) = property.params {
-                if y.iter().any(|(paramname, params)| {
-                    paramname == "VALUE" && params.contains(&"DATE".to_string())
-                }) {
-                    if let Ok(naive_date) = NaiveDate::parse_from_str(&x, "%Y%m%d") {
-                        return Ok(EventDateTime::Date(naive_date));
-                    }
-                } else if let Ok(naive_datetime) =
-                    NaiveDateTime::parse_from_str(&x, "%Y%m%dT%H%M%S")
-                {
-                    if let Some(x) = Local.from_local_datetime(&naive_datetime).single() {
-                        return Ok(EventDateTime::DateTime(x));
-                    }
-                }
-            }
-        }
-        Err("Could not parse ical property.")
-    }
-}
 
 impl From<&icalendar::Property> for EventFrequency {
     fn from(property: &icalendar::Property) -> Self {
@@ -91,46 +42,6 @@ impl TryFrom<&icalendar::Property> for EventDateTime {
             }
         }
         Err("Could not parse ical property.")
-    }
-}
-
-impl TryFrom<IcalEvent> for Event {
-    type Error = &'static str;
-
-    fn try_from(event: IcalEvent) -> Result<Self, Self::Error> {
-        let mut start: Option<EventDateTime> = None;
-        let mut end: Option<EventDateTime> = None;
-        let mut summary: String = String::new();
-        let mut frequency: EventFrequency = EventFrequency::None;
-        for property in event.properties {
-            match property.name.as_ref() {
-                "DTSTART" => {
-                    start = EventDateTime::try_from(property).ok();
-                }
-                "DTEND" => {
-                    end = EventDateTime::try_from(property).ok();
-                }
-                "SUMMARY" => {
-                    if let Some(x) = property.value {
-                        summary = x;
-                    }
-                }
-                "RRULE" => {
-                    frequency = EventFrequency::from(property);
-                }
-                _ => {}
-            }
-        }
-        if let Some(x) = start {
-            Ok(Event {
-                start: x,
-                end,
-                frequency,
-                summary,
-            })
-        } else {
-            Err("Could not parse ical event.")
-        }
     }
 }
 
@@ -205,21 +116,6 @@ impl ReadFromIcsFile for Events {
                         .filter_map(|component| component.as_event())
                         .collect::<Vec<&IcalendarEvent>>()
                     {
-                        if let Ok(e) = Event::try_from(event) {
-                            events.push(e);
-                        }
-                    }
-                }
-            } else {
-                eprintln!("Could not read file {}", filepath.display());
-            }
-
-            if let Ok(f) = File::open(filepath) {
-                let buf = BufReader::new(f);
-                let mut reader = ical::IcalParser::new(buf);
-
-                while let Some(Ok(cal)) = reader.next() {
-                    for event in cal.events {
                         if let Ok(e) = Event::try_from(event) {
                             events.push(e);
                         }
