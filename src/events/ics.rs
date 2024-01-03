@@ -136,115 +136,59 @@ mod tests {
 
     #[test]
     fn test_property_to_frequency_yearly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=YEARLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Yearly);
+        let property = icalendar::Property::new("RRULE", "FREQ=YEARLY");
+        assert_eq!(EventFrequency::from(&property), EventFrequency::Yearly);
     }
     #[test]
     fn test_property_to_frequency_monthly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=MONTHLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Monthly);
+        let property = icalendar::Property::new("RRULE", "FREQ=MONTHLY");
+        assert_eq!(EventFrequency::from(&property), EventFrequency::Monthly);
     }
     #[test]
     fn test_property_to_frequency_weekly() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=WEEKLY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Weekly);
+        let property = icalendar::Property::new("RRULE", "FREQ=WEEKLY");
+        assert_eq!(EventFrequency::from(&property), EventFrequency::Weekly);
     }
     #[test]
     fn test_property_to_frequency_daily() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=DAILY")),
-        };
-        assert_eq!(EventFrequency::from(property), EventFrequency::Daily);
+        let property = icalendar::Property::new("RRULE", "FREQ=DAILY");
+        assert_eq!(EventFrequency::from(&property), EventFrequency::Daily);
     }
     #[test]
     fn test_property_to_eventdatetime_1() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("DTSTART"),
-            params: Some(vec![(String::from("VALUE"), vec![String::from("DATE")])]),
-            value: Some(String::from("19700101")),
-        };
+        let mut property = icalendar::Property::new("DTSTART", "19700101");
+        property.add_parameter("VALUE", "DATE");
         let date = NaiveDate::default();
         assert_eq!(
-            EventDateTime::try_from(property),
+            EventDateTime::try_from(&property),
             Ok(EventDateTime::Date(date))
         );
     }
     #[test]
     fn test_property_to_eventdatetime_2() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("DTSTART"),
-            params: Some(vec![]),
-            value: Some(String::from("19700101T010130")),
-        };
+        let property = icalendar::Property::new("DTSTART", "19700101T010130");
         let date = Local.timestamp_opt(90, 0).unwrap();
         assert_eq!(
-            EventDateTime::try_from(property),
+            EventDateTime::try_from(&property),
             Ok(EventDateTime::DateTime(date))
         );
     }
     #[test]
     fn test_property_to_eventdatetime_err() {
-        let property: ical::property::Property = ical::property::Property {
-            name: String::from("DTSTART"),
-            params: Some(vec![]),
-            value: Some(String::from("19700101010130")),
-        };
-        assert!(EventDateTime::try_from(property).is_err());
+        let property = icalendar::Property::new("DTSTART", "19700101010130");
+        assert!(EventDateTime::try_from(&property).is_err());
     }
     #[test]
     fn test_icalevent_to_event() {
-        let dtstart: ical::property::Property = ical::property::Property {
-            name: String::from("DTSTART"),
-            params: Some(vec![]),
-            value: Some(String::from("19700101T010130")),
-        };
-        let dtend: ical::property::Property = ical::property::Property {
-            name: String::from("DTEND"),
-            params: Some(vec![]),
-            value: Some(String::from("19700101T010130")),
-        };
-        let frequency: ical::property::Property = ical::property::Property {
-            name: String::from("RRULE"),
-            params: None,
-            value: Some(String::from("FREQ=YEARLY")),
-        };
-        let summary: ical::property::Property = ical::property::Property {
-            name: String::from("SUMMARY"),
-            params: None,
-            value: Some(String::from("Some summary")),
-        };
-        let icalevent: IcalEvent = IcalEvent {
-            alarms: vec![],
-            properties: vec![dtstart, dtend, frequency, summary],
-        };
-        assert!(Event::try_from(icalevent).is_ok());
+        let mut icalevent = IcalendarEvent::default();
+        icalevent.add_property("DTSTART", "19700101T010130");
+        assert!(Event::try_from(&icalevent).is_ok());
     }
     #[test]
     fn test_icalevent_to_event_err() {
-        let dtstart: ical::property::Property = ical::property::Property {
-            name: String::from("DTSTART"),
-            params: Some(vec![]),
-            value: Some(String::from("19700101010130")),
-        };
-        let icalevent: IcalEvent = IcalEvent {
-            alarms: vec![],
-            properties: vec![dtstart],
-        };
-        assert!(Event::try_from(icalevent).is_err());
+        let mut icalevent = IcalendarEvent::default();
+        icalevent.add_property("DTSTART", "19700101010130");
+        assert!(Event::try_from(&icalevent).is_err());
     }
     #[test]
     fn test_read_from_ics_file() {
