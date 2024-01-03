@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-extern crate ical;
-
 mod ics;
 pub use ics::ReadFromIcsFile;
 
