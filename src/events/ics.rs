@@ -51,7 +51,6 @@ impl TryFrom<&IcalendarEvent> for Event {
     fn try_from(event: &IcalendarEvent) -> Result<Self, Self::Error> {
         let mut start: Option<EventDateTime> = None;
         let mut end: Option<EventDateTime> = None;
-        let mut summary: String = String::new();
         let mut frequency: EventFrequency = EventFrequency::None;
         for (name, value) in event.properties() {
             match name.as_str() {
@@ -60,9 +59,6 @@ impl TryFrom<&IcalendarEvent> for Event {
                 }
                 "DTEND" => {
                     end = EventDateTime::try_from(value).ok();
-                }
-                "SUMMARY" => {
-                    summary = value.value().to_string();
                 }
                 "RRULE" => {
                     frequency = EventFrequency::from(value);
@@ -75,7 +71,7 @@ impl TryFrom<&IcalendarEvent> for Event {
                 start: x,
                 end,
                 frequency,
-                summary,
+                summary: event.get_summary().unwrap_or_default().to_string(),
             })
         } else {
             Err("Could not parse ical event.")
