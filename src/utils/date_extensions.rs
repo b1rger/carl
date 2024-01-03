@@ -122,6 +122,21 @@ impl Iterator for MonthFullWeeksIter {
     }
 }
 
+pub struct DateRange(pub NaiveDate, pub NaiveDate);
+
+impl Iterator for DateRange {
+    type Item = NaiveDate;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0 < self.1 {
+            self.0 += Duration::days(1);
+            Some(self.0)
+        } else {
+            None
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
