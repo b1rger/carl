@@ -37,9 +37,10 @@ impl TryFrom<&icalendar::Property> for EventDateTime {
         } else if let Ok(naive_datetime) =
             NaiveDateTime::parse_from_str(property.value(), "%Y%m%dT%H%M%S")
         {
-            if let Some(x) = Local.from_local_datetime(&naive_datetime).single() {
-                return Ok(EventDateTime::DateTime(x));
-            }
+            return Ok(EventDateTime::DateTime {
+                date_time: naive_datetime,
+                offset: None,
+            });
         }
         Err("Could not parse ical property.")
     }
@@ -128,7 +129,6 @@ impl ReadFromIcsFile for Events {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::{Local, TimeZone};
 
     #[test]
     fn test_property_to_frequency_yearly() {
@@ -162,11 +162,14 @@ mod tests {
     }
     #[test]
     fn test_property_to_eventdatetime_2() {
-        let property = icalendar::Property::new("DTSTART", "19700101T010130");
-        let date = Local.timestamp_opt(90, 0).unwrap();
+        let property = icalendar::Property::new("DTSTART", "19700101T000000");
+        let date_time = NaiveDateTime::default();
         assert_eq!(
             EventDateTime::try_from(&property),
-            Ok(EventDateTime::DateTime(date))
+            Ok(EventDateTime::DateTime {
+                date_time,
+                offset: None
+            })
         );
     }
     #[test]

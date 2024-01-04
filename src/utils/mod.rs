@@ -8,4 +8,4 @@ mod types;
 
 pub use date_extensions::{DateExtensions, DateRange, MonthFullWeeksIter};
 pub use helpers::convertstyle;
-pub use types::{ChronoDate, ChronoDateTime};
+pub use types::ChronoDate;

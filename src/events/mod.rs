@@ -5,7 +5,7 @@
 mod ics;
 pub use ics::ReadFromIcsFile;
 
-use crate::utils::{ChronoDate, ChronoDateTime};
+use crate::utils::ChronoDate;
 use chrono::prelude::*;
 use chrono::Days;
 use std::fmt;
@@ -21,7 +21,10 @@ pub enum EventFrequency {
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum EventDateTime {
-    DateTime(ChronoDateTime),
+    DateTime {
+        date_time: chrono::NaiveDateTime,
+        offset: Option<chrono::offset::FixedOffset>,
+    },
     Date(ChronoDate),
 }
 
@@ -84,7 +87,7 @@ impl Event {
 
     pub fn get_start_date(&self) -> ChronoDate {
         match self.start {
-            EventDateTime::DateTime(x) => x.date_naive(),
+            EventDateTime::DateTime { date_time, .. } => date_time.date(),
             EventDateTime::Date(x) => x,
         }
     }
@@ -92,7 +95,7 @@ impl Event {
     fn get_end_date(&self) -> ChronoDate {
         match self.end {
             Some(x) => match x {
-                EventDateTime::DateTime(y) => y.date_naive(),
+                EventDateTime::DateTime { date_time, .. } => date_time.date(),
                 EventDateTime::Date(y) => match self.start {
                     EventDateTime::Date(z) => {
                         if z + Days::new(1) == y {
@@ -112,8 +115,14 @@ impl Event {
 impl fmt::Display for Event {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let startformatstring = match self.start {
-            EventDateTime::DateTime(x) => x.format("%a, %b, %e (%H:%M)"),
-            EventDateTime::Date(x) => x.format("%a, %b, %e"),
+            EventDateTime::DateTime { date_time, offset } => {
+                if let Some(x) = offset {
+                    format!("{} ({})", date_time.format("%a, %b, %e (%H:%M)"), x)
+                } else {
+                    date_time.format("%a, %b, %e (%H:%M)").to_string()
+                }
+            }
+            EventDateTime::Date(x) => x.format("%a, %b, %e").to_string(),
         };
         write!(
             f,
