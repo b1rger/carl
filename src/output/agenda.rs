@@ -20,15 +20,11 @@ impl fmt::Display for Agenda<'_> {
             let eventstuple = &mut self.ctx.eventstuple.clone();
             eventstuple.sort_by(|(aevent, _), (bevent, _)| {
                 aevent
-                    .get_start_date()
+                    .start
+                    .date()
                     .month()
-                    .cmp(&bevent.get_start_date().month())
-                    .then(
-                        aevent
-                            .get_start_date()
-                            .day()
-                            .cmp(&bevent.get_start_date().day()),
-                    )
+                    .cmp(&bevent.start.date().month())
+                    .then(aevent.start.date().day().cmp(&bevent.start.date().day()))
             });
             for (event, style) in eventstuple {
                 ret += format!(
