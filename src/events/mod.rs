@@ -7,7 +7,6 @@ pub use ics::ReadFromIcsFile;
 
 use crate::utils::ChronoDate;
 use chrono::prelude::*;
-use chrono::Days;
 use std::fmt;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -26,6 +25,15 @@ pub enum EventDateTime {
         offset: Option<chrono::offset::FixedOffset>,
     },
     Date(ChronoDate),
+}
+
+impl EventDateTime {
+    pub fn date(self) -> NaiveDate {
+        match self {
+            EventDateTime::Date(x) => x,
+            EventDateTime::DateTime { date_time, .. } => date_time.date(),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -51,60 +59,33 @@ impl Default for Event {
 
 impl Event {
     pub fn is_day(&self, date: &ChronoDate) -> bool {
-        let start = self.get_start_date();
-        let end = self.get_end_date();
-
         match self.frequency {
             EventFrequency::Weekly => {
-                start <= *date
-                    && start.weekday().num_days_from_monday()
+                self.start.date() <= *date
+                    && self.start.date().weekday().num_days_from_monday()
                         <= date.weekday().num_days_from_monday()
-                    && date.weekday().num_days_from_monday() <= end.weekday().num_days_from_monday()
+                    && date.weekday().num_days_from_monday()
+                        <= self.end.date().weekday().num_days_from_monday()
             }
-            EventFrequency::Daily => start <= *date && *date <= end,
+            EventFrequency::Daily => self.start.date() <= *date && *date <= self.end.date(),
             _ => self.in_range(*date, *date),
         }
     }
 
     pub fn in_range(&self, daterangebegin: ChronoDate, daterangeend: ChronoDate) -> bool {
-        let start = self.get_start_date();
-        let end = self.get_end_date();
-
         match self.frequency {
             EventFrequency::Yearly => {
-                daterangebegin.day() <= start.day()
-                    && daterangebegin.month() <= start.month()
-                    && end.month() <= daterangeend.month()
-                    && end.day() <= daterangeend.day()
+                daterangebegin.day() <= self.start.date().day()
+                    && daterangebegin.month() <= self.start.date().month()
+                    && self.end.date().month() <= daterangeend.month()
+                    && self.end.date().day() <= daterangeend.day()
             }
             EventFrequency::Monthly => {
-                daterangebegin.day() <= start.day() && end.day() <= daterangeend.day()
+                daterangebegin.day() <= self.start.date().day()
+                    && self.end.date().day() <= daterangeend.day()
             }
             EventFrequency::Weekly | EventFrequency::Daily => true,
-            _ => daterangebegin <= start && end <= daterangeend,
-        }
-    }
-
-    pub fn get_start_date(&self) -> ChronoDate {
-        match self.start {
-            EventDateTime::DateTime { date_time, .. } => date_time.date(),
-            EventDateTime::Date(x) => x,
-        }
-    }
-
-    fn get_end_date(&self) -> ChronoDate {
-        match self.end {
-            EventDateTime::DateTime { date_time, .. } => date_time.date(),
-            EventDateTime::Date(y) => match self.start {
-                EventDateTime::Date(z) => {
-                    if z + Days::new(1) == y {
-                        z
-                    } else {
-                        y
-                    }
-                }
-                _ => y,
-            },
+            _ => daterangebegin <= self.start.date() && self.end.date() <= daterangeend,
         }
     }
 }
@@ -190,17 +171,17 @@ mod tests {
             end: EventDateTime::Date(date),
             ..Default::default()
         };
-        assert_eq!(event.get_end_date(), date);
+        assert_eq!(event.end.date(), date);
     }
     #[test]
     fn test_event_get_end_date_case3() {
         let date = NaiveDate::default();
         let event = Event {
             start: EventDateTime::Date(date),
-            end: EventDateTime::Date(date + Days::new(1)),
+            end: EventDateTime::Date(date),
             ..Default::default()
         };
-        assert_eq!(event.get_end_date(), date);
+        assert_eq!(event.end.date(), date);
     }
     #[test]
     fn test_event_fmt_date() {
