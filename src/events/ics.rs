@@ -57,9 +57,9 @@ impl TryFrom<&IcalendarEvent> for Event {
         }
         if let Some(x) = event.get_start() {
             let start = x.into();
-            let end: Option<EventDateTime> = match event.get_end() {
-                Some(y) => Some(y.into()),
-                _ => None,
+            let end: EventDateTime = match event.get_end() {
+                Some(y) => y.into(),
+                _ => start,
             };
             Ok(Event {
                 start,
