@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::events::{Event, EventDateTime, EventFrequency, Events};
-use chrono::prelude::*;
-use icalendar::{Calendar, Component, Event as IcalendarEvent};
+use icalendar::{Calendar, CalendarDateTime, Component, DatePerhapsTime, Event as IcalendarEvent};
 use std::path::{Path, PathBuf};
 
 impl From<&icalendar::Property> for EventFrequency {
@@ -24,25 +23,22 @@ impl From<&icalendar::Property> for EventFrequency {
     }
 }
 
-impl TryFrom<&icalendar::Property> for EventDateTime {
-    type Error = &'static str;
-
-    fn try_from(property: &icalendar::Property) -> Result<Self, Self::Error> {
-        if property.params().iter().any(|(paramname, params)| {
-            paramname == "VALUE" && params.value().contains(&"DATE".to_string())
-        }) {
-            if let Ok(naive_date) = NaiveDate::parse_from_str(property.value(), "%Y%m%d") {
-                return Ok(EventDateTime::Date(naive_date));
+impl From<icalendar::DatePerhapsTime> for EventDateTime {
+    fn from(dateperhapstime: icalendar::DatePerhapsTime) -> Self {
+        match dateperhapstime {
+            DatePerhapsTime::DateTime(dt) => {
+                let date_time = match dt {
+                    CalendarDateTime::Floating(date_time) => date_time,
+                    CalendarDateTime::Utc(date_time) => date_time.naive_utc(),
+                    CalendarDateTime::WithTimezone { date_time, tzid: _ } => date_time,
+                };
+                EventDateTime::DateTime {
+                    date_time,
+                    offset: None,
+                }
             }
-        } else if let Ok(naive_datetime) =
-            NaiveDateTime::parse_from_str(property.value(), "%Y%m%dT%H%M%S")
-        {
-            return Ok(EventDateTime::DateTime {
-                date_time: naive_datetime,
-                offset: None,
-            });
+            DatePerhapsTime::Date(naive_date) => EventDateTime::Date(naive_date),
         }
-        Err("Could not parse ical property.")
     }
 }
 
@@ -50,26 +46,23 @@ impl TryFrom<&IcalendarEvent> for Event {
     type Error = &'static str;
 
     fn try_from(event: &IcalendarEvent) -> Result<Self, Self::Error> {
-        let mut start: Option<EventDateTime> = None;
-        let mut end: Option<EventDateTime> = None;
         let mut frequency: EventFrequency = EventFrequency::None;
         for (name, value) in event.properties() {
             match name.as_str() {
-                "DTSTART" => {
-                    start = EventDateTime::try_from(value).ok();
-                }
-                "DTEND" => {
-                    end = EventDateTime::try_from(value).ok();
-                }
                 "RRULE" => {
                     frequency = EventFrequency::from(value);
                 }
                 _ => {}
             }
         }
-        if let Some(x) = start {
+        if let Some(x) = event.get_start() {
+            let start = x.into();
+            let end: Option<EventDateTime> = match event.get_end() {
+                Some(y) => Some(y.into()),
+                _ => None,
+            };
             Ok(Event {
-                start: x,
+                start,
                 end,
                 frequency,
                 summary: event.get_summary().unwrap_or_default().to_string(),
@@ -149,33 +142,6 @@ mod tests {
     fn test_property_to_frequency_daily() {
         let property = icalendar::Property::new("RRULE", "FREQ=DAILY");
         assert_eq!(EventFrequency::from(&property), EventFrequency::Daily);
-    }
-    #[test]
-    fn test_property_to_eventdatetime_1() {
-        let mut property = icalendar::Property::new("DTSTART", "19700101");
-        property.add_parameter("VALUE", "DATE");
-        let date = NaiveDate::default();
-        assert_eq!(
-            EventDateTime::try_from(&property),
-            Ok(EventDateTime::Date(date))
-        );
-    }
-    #[test]
-    fn test_property_to_eventdatetime_2() {
-        let property = icalendar::Property::new("DTSTART", "19700101T000000");
-        let date_time = NaiveDateTime::default();
-        assert_eq!(
-            EventDateTime::try_from(&property),
-            Ok(EventDateTime::DateTime {
-                date_time,
-                offset: None
-            })
-        );
-    }
-    #[test]
-    fn test_property_to_eventdatetime_err() {
-        let property = icalendar::Property::new("DTSTART", "19700101010130");
-        assert!(EventDateTime::try_from(&property).is_err());
     }
     #[test]
     fn test_icalevent_to_event() {
