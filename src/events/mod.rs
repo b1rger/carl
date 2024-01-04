@@ -7,16 +7,8 @@ pub use ics::ReadFromIcsFile;
 
 use crate::utils::ChronoDate;
 use chrono::prelude::*;
+use rrule::{RRuleSet, Tz};
 use std::fmt;
-
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub enum EventFrequency {
-    Yearly,
-    Monthly,
-    Weekly,
-    Daily,
-    None,
-}
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum EventDateTime {
@@ -40,7 +32,7 @@ impl EventDateTime {
 pub struct Event {
     pub start: EventDateTime,
     pub end: EventDateTime,
-    pub frequency: EventFrequency,
+    pub rrulesets: Vec<RRuleSet>,
     pub summary: String,
 }
 
@@ -51,7 +43,7 @@ impl Default for Event {
         Event {
             start: EventDateTime::Date(NaiveDate::default()),
             end: EventDateTime::Date(NaiveDate::default()),
-            frequency: EventFrequency::None,
+            rrulesets: vec![],
             summary: String::from("Default Event"),
         }
     }
@@ -59,34 +51,38 @@ impl Default for Event {
 
 impl Event {
     pub fn is_day(&self, date: &ChronoDate) -> bool {
-        match self.frequency {
-            EventFrequency::Weekly => {
-                self.start.date() <= *date
-                    && self.start.date().weekday().num_days_from_monday()
-                        <= date.weekday().num_days_from_monday()
-                    && date.weekday().num_days_from_monday()
-                        <= self.end.date().weekday().num_days_from_monday()
-            }
-            EventFrequency::Daily => self.start.date() <= *date && *date <= self.end.date(),
-            _ => self.in_range(*date, *date),
-        }
+        self.in_range(*date, *date)
     }
 
     pub fn in_range(&self, daterangebegin: ChronoDate, daterangeend: ChronoDate) -> bool {
-        match self.frequency {
-            EventFrequency::Yearly => {
-                daterangebegin.day() <= self.start.date().day()
-                    && daterangebegin.month() <= self.start.date().month()
-                    && self.end.date().month() <= daterangeend.month()
-                    && self.end.date().day() <= daterangeend.day()
+        let timezone: Tz = Local::now().timezone().into();
+        let before = timezone
+            .with_ymd_and_hms(
+                daterangeend.year(),
+                daterangeend.month(),
+                daterangeend.day(),
+                23,
+                59,
+                59,
+            )
+            .unwrap();
+        let after = timezone
+            .with_ymd_and_hms(
+                daterangebegin.year(),
+                daterangebegin.month(),
+                daterangebegin.day(),
+                0,
+                0,
+                0,
+            )
+            .unwrap();
+        for rruleset in &self.rrulesets {
+            let rresult = rruleset.clone().before(before).after(after).all(1);
+            if !rresult.dates.is_empty() {
+                return true;
             }
-            EventFrequency::Monthly => {
-                daterangebegin.day() <= self.start.date().day()
-                    && self.end.date().day() <= daterangeend.day()
-            }
-            EventFrequency::Weekly | EventFrequency::Daily => true,
-            _ => daterangebegin <= self.start.date() && self.end.date() <= daterangeend,
         }
+        daterangebegin <= self.start.date() && self.end.date() <= daterangeend
     }
 }
 
@@ -132,7 +128,6 @@ mod tests {
     fn test_event_is_yearly_day() {
         let date = NaiveDate::default();
         let event = Event {
-            frequency: EventFrequency::Yearly,
             end: EventDateTime::Date(date),
             ..Default::default()
         };
@@ -141,7 +136,6 @@ mod tests {
     #[test]
     fn test_event_is_monthy_day() {
         let event = Event {
-            frequency: EventFrequency::Monthly,
             ..Default::default()
         };
         let date = NaiveDate::default();
@@ -150,7 +144,6 @@ mod tests {
     #[test]
     fn test_event_is_daily_day() {
         let event = Event {
-            frequency: EventFrequency::Daily,
             ..Default::default()
         };
         let date = NaiveDate::default();

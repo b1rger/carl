@@ -2,26 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::events::{Event, EventDateTime, EventFrequency, Events};
+use crate::events::{Event, EventDateTime, Events};
+use crate::utils::DateRange;
 use icalendar::{Calendar, CalendarDateTime, Component, DatePerhapsTime, Event as IcalendarEvent};
+use rrule::RRuleSet;
 use std::path::{Path, PathBuf};
-
-impl From<&icalendar::Property> for EventFrequency {
-    fn from(property: &icalendar::Property) -> Self {
-        let mut ret = EventFrequency::None;
-        let values = property.value().split(';');
-        for val in values {
-            match val {
-                "FREQ=YEARLY" => ret = EventFrequency::Yearly,
-                "FREQ=MONTHLY" => ret = EventFrequency::Monthly,
-                "FREQ=WEEKLY" => ret = EventFrequency::Weekly,
-                "FREQ=DAILY" => ret = EventFrequency::Daily,
-                _ => (),
-            }
-        }
-        ret
-    }
-}
 
 impl From<icalendar::DatePerhapsTime> for EventDateTime {
     fn from(dateperhapstime: icalendar::DatePerhapsTime) -> Self {
@@ -46,25 +31,36 @@ impl TryFrom<&IcalendarEvent> for Event {
     type Error = &'static str;
 
     fn try_from(event: &IcalendarEvent) -> Result<Self, Self::Error> {
-        let mut frequency: EventFrequency = EventFrequency::None;
-        for (name, value) in event.properties() {
-            match name.as_str() {
-                "RRULE" => {
-                    frequency = EventFrequency::from(value);
-                }
-                _ => {}
+        let mut rrulestring = String::new();
+        if event.properties().contains_key("RRULE") {
+            let p = event.properties()["RRULE"].clone();
+            if let Ok(x) = TryInto::<String>::try_into(p) {
+                rrulestring = x;
             }
         }
+
         if let Some(x) = event.get_start() {
-            let start = x.into();
+            let start: EventDateTime = x.into();
             let end: EventDateTime = match event.get_end() {
                 Some(y) => y.into(),
                 _ => start,
             };
+            let mut rrulesets: Vec<RRuleSet> = vec![];
+            if !rrulestring.is_empty() {
+                for date in DateRange(start.date(), end.date()) {
+                    let rrule = format!(
+                        "DTSTART;VALUE=DATE:{}\n{rrulestring}",
+                        date.format("%Y%m%d")
+                    );
+                    if let Ok(x) = rrule.parse() {
+                        rrulesets.push(x);
+                    }
+                }
+            }
             Ok(Event {
                 start,
                 end,
-                frequency,
+                rrulesets,
                 summary: event.get_summary().unwrap_or_default().to_string(),
             })
         } else {
@@ -123,26 +119,6 @@ impl ReadFromIcsFile for Events {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_property_to_frequency_yearly() {
-        let property = icalendar::Property::new("RRULE", "FREQ=YEARLY");
-        assert_eq!(EventFrequency::from(&property), EventFrequency::Yearly);
-    }
-    #[test]
-    fn test_property_to_frequency_monthly() {
-        let property = icalendar::Property::new("RRULE", "FREQ=MONTHLY");
-        assert_eq!(EventFrequency::from(&property), EventFrequency::Monthly);
-    }
-    #[test]
-    fn test_property_to_frequency_weekly() {
-        let property = icalendar::Property::new("RRULE", "FREQ=WEEKLY");
-        assert_eq!(EventFrequency::from(&property), EventFrequency::Weekly);
-    }
-    #[test]
-    fn test_property_to_frequency_daily() {
-        let property = icalendar::Property::new("RRULE", "FREQ=DAILY");
-        assert_eq!(EventFrequency::from(&property), EventFrequency::Daily);
-    }
     #[test]
     fn test_icalevent_to_event() {
         let mut icalevent = IcalendarEvent::default();
