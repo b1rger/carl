@@ -31,7 +31,7 @@ pub enum EventDateTime {
 #[derive(Debug, Clone)]
 pub struct Event {
     pub start: EventDateTime,
-    pub end: Option<EventDateTime>,
+    pub end: EventDateTime,
     pub frequency: EventFrequency,
     pub summary: String,
 }
@@ -42,7 +42,7 @@ impl Default for Event {
     fn default() -> Event {
         Event {
             start: EventDateTime::Date(NaiveDate::default()),
-            end: None,
+            end: EventDateTime::Date(NaiveDate::default()),
             frequency: EventFrequency::None,
             summary: String::from("Default Event"),
         }
@@ -94,20 +94,17 @@ impl Event {
 
     fn get_end_date(&self) -> ChronoDate {
         match self.end {
-            Some(x) => match x {
-                EventDateTime::DateTime { date_time, .. } => date_time.date(),
-                EventDateTime::Date(y) => match self.start {
-                    EventDateTime::Date(z) => {
-                        if z + Days::new(1) == y {
-                            z
-                        } else {
-                            y
-                        }
+            EventDateTime::DateTime { date_time, .. } => date_time.date(),
+            EventDateTime::Date(y) => match self.start {
+                EventDateTime::Date(z) => {
+                    if z + Days::new(1) == y {
+                        z
+                    } else {
+                        y
                     }
-                    _ => y,
-                },
+                }
+                _ => y,
             },
-            None => self.get_start_date(),
         }
     }
 }
@@ -155,7 +152,7 @@ mod tests {
         let date = NaiveDate::default();
         let event = Event {
             frequency: EventFrequency::Yearly,
-            end: Some(EventDateTime::Date(date)),
+            end: EventDateTime::Date(date),
             ..Default::default()
         };
         assert!(event.is_day(&date));
@@ -190,7 +187,7 @@ mod tests {
         let date = NaiveDate::default();
         let event = Event {
             start: EventDateTime::Date(date),
-            end: Some(EventDateTime::Date(date)),
+            end: EventDateTime::Date(date),
             ..Default::default()
         };
         assert_eq!(event.get_end_date(), date);
@@ -200,7 +197,7 @@ mod tests {
         let date = NaiveDate::default();
         let event = Event {
             start: EventDateTime::Date(date),
-            end: Some(EventDateTime::Date(date + Days::new(1))),
+            end: EventDateTime::Date(date + Days::new(1)),
             ..Default::default()
         };
         assert_eq!(event.get_end_date(), date);
