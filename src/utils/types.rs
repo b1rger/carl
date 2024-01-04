@@ -2,7 +2,4 @@
 //
 // SPDX-License-Identifier: MIT
 
-use chrono::prelude::*;
-
 pub type ChronoDate = chrono::NaiveDate;
-pub type ChronoDateTime = chrono::DateTime<Local>;
