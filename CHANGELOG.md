@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/b1rger/carl/compare/v0.2.0...v0.2.1) (2024-01-06)
+
+
+### Bug Fixes
+
+* replace wildcard dependency with versioned one ([b3f40ca](https://github.com/b1rger/carl/commit/b3f40cad249e4b62208a741b10f690bd229b4d88))
+
 ## [0.2.0](https://github.com/b1rger/carl/compare/v0.1.2...v0.2.0) (2024-01-06)
 
 
