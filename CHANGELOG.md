@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0](https://github.com/b1rger/carl/compare/v0.1.2...v0.2.0) (2024-01-06)
+
+
+### Features
+
+* implement calendar parsing using icalendar ([9705c2b](https://github.com/b1rger/carl/commit/9705c2bdbcf5221125341a8b55eb862ad7ef7c4f))
+* implement DateRange ([500c685](https://github.com/b1rger/carl/commit/500c68532ec345cc2b094fae12e4a5bd7b55d0af))
+* use rrule instead of parsing RRULE manually ([7480a89](https://github.com/b1rger/carl/commit/7480a896969808a9a3ea6588a4de402bd62a4cbb))
+
 ## [0.1.2](https://github.com/b1rger/carl/compare/v0.1.1...v0.1.2) (2023-12-05)
 
 
