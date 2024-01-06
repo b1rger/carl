@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::utils::ChronoDate;
 use anyhow::{anyhow, Result};
 use chrono::prelude::*;
 use clap::{crate_authors, crate_name, crate_version, Parser};
@@ -57,8 +56,8 @@ impl Default for Cli {
 }
 
 impl Cli {
-    pub fn validate_date(&self) -> Result<ChronoDate> {
-        let mut today: ChronoDate = Local::now().date_naive();
+    pub fn validate_date(&self) -> Result<chrono::NaiveDate> {
+        let mut today: chrono::NaiveDate = Local::now().date_naive();
         let mut year: i32 = today.year();
         let mut month: u32 = today.month();
         let mut day: u32 = today.day();
@@ -147,13 +146,13 @@ mod tests {
 
     #[test]
     fn test_validate_date_defaults_to_now() {
-        let today: ChronoDate = Local::now().date_naive();
+        let today: chrono::NaiveDate = Local::now().date_naive();
         let o: Cli = Cli::default();
         assert_eq!(today, o.validate_date().unwrap());
     }
     #[test]
     fn test_validate_date_default_to_now_with_custom_year() {
-        let today: ChronoDate = Local::now().date_naive().with_year(2007).unwrap();
+        let today: chrono::NaiveDate = Local::now().date_naive().with_year(2007).unwrap();
         let o: Cli = Cli {
             date: vec![String::from("2007")],
             ..Default::default()
@@ -162,7 +161,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_defaults_to_now_with_custom_year_and_month() {
-        let today: ChronoDate = Local::now()
+        let today: chrono::NaiveDate = Local::now()
             .date_naive()
             .with_year(2007)
             .unwrap()
@@ -176,7 +175,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_defaults_to_now_with_custom_year_and_month_and_day() {
-        let today: ChronoDate = Local::now()
+        let today: chrono::NaiveDate = Local::now()
             .date_naive()
             .with_year(2007)
             .unwrap()
@@ -192,7 +191,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_defaults_to_now_with_ambiguous_arguments() {
-        let today: ChronoDate = Local::now().date_naive();
+        let today: chrono::NaiveDate = Local::now().date_naive();
         let o: Cli = Cli {
             date: vec![
                 String::from("2007"),
@@ -266,7 +265,7 @@ mod tests {
     }
     #[test]
     fn test_validate_date_errors_with_non_existent_date() {
-        let today: ChronoDate = Local::now().date_naive();
+        let today: chrono::NaiveDate = Local::now().date_naive();
         let o: Cli = Cli {
             date: vec![String::from("2007"), String::from("2"), String::from("30")],
             ..Default::default()

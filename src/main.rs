@@ -21,12 +21,12 @@ use events::{Events, ReadFromIcsFile};
 use output::agenda::Agenda;
 use output::calendar::Calendar;
 use output::date::Date;
-use utils::{ChronoDate, DateExtensions};
+use utils::DateExtensions;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
     let mut columns = 1;
-    let mut months: Vec<ChronoDate> = vec![];
+    let mut months: Vec<chrono::NaiveDate> = vec![];
 
     let mut ctx: Context;
     match Context::new() {
@@ -37,8 +37,8 @@ fn main() {
         }
     }
 
-    let mut daterangebegin: ChronoDate = ctx.usersetdate.first_day_of_month();
-    let mut daterangeend: ChronoDate = ctx.usersetdate.last_day_of_month();
+    let mut daterangebegin: chrono::NaiveDate = ctx.usersetdate.first_day_of_month();
+    let mut daterangeend: chrono::NaiveDate = ctx.usersetdate.last_day_of_month();
 
     if ctx.opts.three {
         daterangebegin = (ctx.usersetdate - Duration::weeks(4)).first_day_of_month();

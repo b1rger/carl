@@ -3,16 +3,16 @@
 // SPDX-License-Identifier: MIT
 
 use crate::config::{DateProperty, Style, StyleType};
-use crate::utils::{convertstyle, ChronoDate, DateExtensions};
+use crate::utils::{convertstyle, DateExtensions};
 use crate::Context;
 use chrono::Datelike;
 
 use std::fmt;
 
 pub struct Date<'a> {
-    pub date: ChronoDate,
+    pub date: chrono::NaiveDate,
     pub ctx: &'a Context,
-    pub firstdayofdisplayedmonth: ChronoDate,
+    pub firstdayofdisplayedmonth: chrono::NaiveDate,
 }
 
 impl Date<'_> {
