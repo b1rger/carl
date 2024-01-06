@@ -21,6 +21,7 @@ use events::{Events, ReadFromIcsFile};
 use output::agenda::Agenda;
 use output::calendar::Calendar;
 use output::date::Date;
+use output::yearprogress::Yearprogress;
 use utils::DateExtensions;
 
 #[cfg(not(tarpaulin_include))]
@@ -84,6 +85,11 @@ fn main() {
 
     if ctx.opts.action.agenda {
         let agenda = Agenda { ctx: &ctx };
-        print!("{}", agenda)
+        print!("{}", agenda);
+    }
+
+    if ctx.opts.action.yearprogress {
+        let yp = Yearprogress { ctx: &ctx };
+        print!("{}", yp);
     }
 }
