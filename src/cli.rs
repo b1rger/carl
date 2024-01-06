@@ -46,6 +46,8 @@ pub struct Action {
     pub calendar: bool,
     #[clap(short = 'a', long = "agenda", help = "show agenda")]
     pub agenda: bool,
+    #[clap(long = "year-progress", help = "show year progress")]
+    pub yearprogress: bool,
 }
 
 impl Cli {
