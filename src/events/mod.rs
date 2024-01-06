@@ -5,7 +5,6 @@
 mod ics;
 pub use ics::ReadFromIcsFile;
 
-use crate::utils::ChronoDate;
 use chrono::prelude::*;
 use rrule::{RRuleSet, Tz};
 use std::fmt;
@@ -16,7 +15,7 @@ pub enum EventDateTime {
         date_time: chrono::NaiveDateTime,
         offset: Option<chrono::offset::FixedOffset>,
     },
-    Date(ChronoDate),
+    Date(chrono::NaiveDate),
 }
 
 impl EventDateTime {
@@ -50,11 +49,15 @@ impl Default for Event {
 }
 
 impl Event {
-    pub fn is_day(&self, date: &ChronoDate) -> bool {
+    pub fn is_day(&self, date: &chrono::NaiveDate) -> bool {
         self.in_range(*date, *date)
     }
 
-    pub fn in_range(&self, daterangebegin: ChronoDate, daterangeend: ChronoDate) -> bool {
+    pub fn in_range(
+        &self,
+        daterangebegin: chrono::NaiveDate,
+        daterangeend: chrono::NaiveDate,
+    ) -> bool {
         let timezone: Tz = Local::now().timezone().into();
         let before = timezone
             .with_ymd_and_hms(

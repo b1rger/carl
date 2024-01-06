@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::utils::{ChronoDate, DateExtensions, MonthFullWeeksIter};
+use crate::utils::{DateExtensions, MonthFullWeeksIter};
 use crate::Context;
 use crate::Date;
 use chrono::{Duration, NaiveDate};
@@ -10,7 +10,7 @@ use chrono::{Duration, NaiveDate};
 use std::fmt;
 
 pub struct Calendar<'a> {
-    pub dates: Vec<ChronoDate>,
+    pub dates: Vec<chrono::NaiveDate>,
     pub columns: usize,
     pub ctx: &'a Context,
 }
@@ -93,7 +93,7 @@ impl fmt::Display for Calendar<'_> {
 
 impl Calendar<'_> {
     fn weekdays(&self) -> String {
-        let mut week: Vec<ChronoDate> = vec![];
+        let mut week: Vec<chrono::NaiveDate> = vec![];
         let (s, e) = if self.ctx.opts.sunday {
             (3, 9)
         } else {
@@ -172,7 +172,7 @@ mod tests {
         };
         ctx.opts.year = true;
 
-        let mut dates: Vec<ChronoDate> = vec![];
+        let mut dates: Vec<chrono::NaiveDate> = vec![];
         let daterangebegin = ctx.usersetdate.first_day_of_year();
         let daterangeend = ctx.usersetdate.last_day_of_year();
         let mut tmpdate = daterangebegin;

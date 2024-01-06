@@ -6,14 +6,13 @@ use crate::cli::Cli;
 use crate::config::{Config, Theme};
 use crate::config::{Style, StyleType};
 use crate::events::Event;
-use crate::utils::ChronoDate;
 use anyhow::Result;
 use chrono::prelude::*;
 use clap::Parser;
 
 // A struct storing the combined settings of config file, theme, options, ...
 pub struct Context {
-    pub usersetdate: ChronoDate,
+    pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
     pub config: Config,
     pub eventstuple: Vec<(Event, Style)>,
@@ -37,7 +36,7 @@ impl Context {
             StyleType::Light
         };
 
-        let usersetdate: ChronoDate = match opts.validate_date() {
+        let usersetdate: chrono::NaiveDate = match opts.validate_date() {
             Ok(x) => x,
             Err(x) => return Err(x),
         };

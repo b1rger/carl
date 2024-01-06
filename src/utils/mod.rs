@@ -4,8 +4,6 @@
 
 mod date_extensions;
 mod helpers;
-mod types;
 
 pub use date_extensions::{DateExtensions, DateRange, MonthFullWeeksIter};
 pub use helpers::convertstyle;
-pub use types::ChronoDate;
