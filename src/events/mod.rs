@@ -5,7 +5,10 @@
 mod ics;
 pub use ics::ReadFromIcsFile;
 
+use crate::config::Style;
+use crate::utils::convertstyle;
 use chrono::prelude::*;
+use chrono::Duration;
 use rrule::{RRuleSet, Tz};
 use std::fmt;
 
@@ -28,11 +31,84 @@ impl EventDateTime {
 }
 
 #[derive(Debug, Clone)]
+pub struct EventInstance {
+    pub date: chrono::NaiveDate,
+    pub event: Event,
+    pub style: Style,
+}
+
+impl fmt::Display for EventInstance {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let style = convertstyle(self.style.stylenames.to_vec(), "·");
+        write!(f, "{} {}: {}", style, self.date, self.event.summary)
+    }
+}
+
+pub type EventInstances = Vec<EventInstance>;
+
+#[derive(Debug, Clone)]
 pub struct Event {
     pub start: EventDateTime,
     pub end: EventDateTime,
     pub rrulesets: Vec<RRuleSet>,
     pub summary: String,
+}
+
+impl Event {
+    pub fn instances(&self, start: &NaiveDate, end: &NaiveDate, style: &Style) -> EventInstances {
+        let timezone: Tz = Local::now().timezone().into();
+        let before = timezone
+            .with_ymd_and_hms(end.year(), end.month(), end.day(), 23, 59, 59)
+            .unwrap();
+        let after = timezone
+            .with_ymd_and_hms(start.year(), start.month(), start.day(), 0, 0, 0)
+            .unwrap();
+        let duration = *end - *start;
+        let mut eventinstances: EventInstances = vec![];
+        if self.rrulesets.is_empty() {
+            let mut date = self.start.date();
+            if date == self.end.date() {
+                if start <= &date && &date <= end {
+                    eventinstances.push(EventInstance {
+                        date,
+                        event: self.clone(),
+                        style: style.clone(),
+                    });
+                }
+            } else {
+                while date < self.end.date() {
+                    if start <= &date && &date <= end {
+                        eventinstances.push(EventInstance {
+                            date,
+                            event: self.clone(),
+                            style: style.clone(),
+                        });
+                    }
+                    date += Duration::days(1);
+                }
+            }
+        } else {
+            for rruleset in &self.rrulesets {
+                let ruleset = rruleset
+                    .clone()
+                    .before(before)
+                    .after(after)
+                    .all(duration.num_days() as u16);
+                eventinstances.append(
+                    &mut ruleset
+                        .dates
+                        .iter()
+                        .map(|date| EventInstance {
+                            date: date.date_naive(),
+                            event: self.clone(),
+                            style: style.clone(),
+                        })
+                        .collect::<EventInstances>(),
+                );
+            }
+        }
+        eventinstances
+    }
 }
 
 pub type Events = Vec<Event>;
@@ -45,47 +121,6 @@ impl Default for Event {
             rrulesets: vec![],
             summary: String::from("Default Event"),
         }
-    }
-}
-
-impl Event {
-    pub fn is_day(&self, date: &chrono::NaiveDate) -> bool {
-        self.in_range(*date, *date)
-    }
-
-    pub fn in_range(
-        &self,
-        daterangebegin: chrono::NaiveDate,
-        daterangeend: chrono::NaiveDate,
-    ) -> bool {
-        let timezone: Tz = Local::now().timezone().into();
-        let before = timezone
-            .with_ymd_and_hms(
-                daterangeend.year(),
-                daterangeend.month(),
-                daterangeend.day(),
-                23,
-                59,
-                59,
-            )
-            .unwrap();
-        let after = timezone
-            .with_ymd_and_hms(
-                daterangebegin.year(),
-                daterangebegin.month(),
-                daterangebegin.day(),
-                0,
-                0,
-                0,
-            )
-            .unwrap();
-        for rruleset in &self.rrulesets {
-            let rresult = rruleset.clone().before(before).after(after).all(1);
-            if !rresult.dates.is_empty() {
-                return true;
-            }
-        }
-        daterangebegin <= self.start.date() && self.end.date() <= daterangeend
     }
 }
 
@@ -120,45 +155,6 @@ mod tests {
         let date = NaiveDate::default();
         assert_eq!(event.start, EventDateTime::Date(date));
     }
-
-    #[test]
-    fn test_event_is_day() {
-        let event = Event::default();
-        let date = NaiveDate::default();
-        assert!(event.is_day(&date));
-    }
-    #[test]
-    fn test_event_is_yearly_day() {
-        let date = NaiveDate::default();
-        let event = Event {
-            end: EventDateTime::Date(date),
-            ..Default::default()
-        };
-        assert!(event.is_day(&date));
-    }
-    #[test]
-    fn test_event_is_monthy_day() {
-        let event = Event {
-            ..Default::default()
-        };
-        let date = NaiveDate::default();
-        assert!(event.is_day(&date));
-    }
-    #[test]
-    fn test_event_is_daily_day() {
-        let event = Event {
-            ..Default::default()
-        };
-        let date = NaiveDate::default();
-        assert!(event.is_day(&date));
-    }
-    /*#[test]
-    fn test_event_get_end_date_case1() {
-        let mut event = Event::default();
-        let date = NaiveDateTime::default();
-        event.end = Some(EventDateTime::DateTime(date));
-        assert_eq!(event.get_end_date(), date);
-    }*/
     #[test]
     fn test_event_get_end_date_case2() {
         let date = NaiveDate::default();
