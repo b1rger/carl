@@ -5,5 +5,5 @@
 mod date_extensions;
 mod helpers;
 
-pub use date_extensions::{DateExtensions, DateRange, MonthFullWeeksIter};
+pub use date_extensions::{DateExtensions, MonthFullWeeksIter};
 pub use helpers::convertstyle;
