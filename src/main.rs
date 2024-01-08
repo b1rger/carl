@@ -73,13 +73,17 @@ fn main() {
     }
     ctx.eventinstances.sort_by(|a, b| a.date.cmp(&b.date));
 
-    let calendar = Calendar {
-        dates: months,
-        columns,
-        ctx: &ctx,
-    };
-    print!("{}", calendar);
+    if ctx.opts.action.calendar {
+        let calendar = Calendar {
+            dates: months,
+            columns,
+            ctx: &ctx,
+        };
+        print!("{}", calendar);
+    }
 
-    let agenda = Agenda { ctx: &ctx };
-    print!("{}", agenda)
+    if ctx.opts.action.agenda {
+        let agenda = Agenda { ctx: &ctx };
+        print!("{}", agenda)
+    }
 }
