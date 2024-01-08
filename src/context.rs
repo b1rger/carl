@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cli::Cli;
+use crate::config::StyleType;
 use crate::config::{Config, Theme};
-use crate::config::{Style, StyleType};
-use crate::events::Event;
+use crate::events::EventInstances;
 use anyhow::Result;
 use chrono::prelude::*;
 use clap::Parser;
@@ -15,9 +15,9 @@ pub struct Context {
     pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
     pub config: Config,
-    pub eventstuple: Vec<(Event, Style)>,
     pub theme: Theme,
     pub styletype: StyleType,
+    pub eventinstances: EventInstances,
 }
 
 impl Context {
@@ -45,9 +45,9 @@ impl Context {
             usersetdate,
             opts,
             config,
-            eventstuple: vec![],
             theme,
             styletype,
+            eventinstances: vec![],
         })
     }
 }
@@ -58,9 +58,9 @@ impl Default for Context {
             usersetdate: NaiveDate::default(),
             opts: Cli::default(),
             config: Config::default(),
-            eventstuple: vec![],
             theme: Theme::default(),
             styletype: StyleType::Light,
+            eventinstances: vec![],
         }
     }
 }
@@ -72,11 +72,11 @@ mod tests {
     #[test]
     fn test_context_default() {
         let ctx = Context::default();
-        assert!(ctx.eventstuple.is_empty());
+        assert!(ctx.eventinstances.is_empty());
     }
     #[test]
     fn test_context_new() {
         let ctx = Context::new().unwrap();
-        assert!(ctx.eventstuple.is_empty());
+        assert!(ctx.eventinstances.is_empty());
     }
 }

@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::utils::convertstyle;
 use crate::Context;
-use chrono::Datelike;
 
 use std::fmt;
 
@@ -16,57 +14,10 @@ impl fmt::Display for Agenda<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut ret: String = String::new();
         if self.ctx.opts.agenda {
-            ret = "Agenda\n".to_string();
-            let eventstuple = &mut self.ctx.eventstuple.clone();
-            eventstuple.sort_by(|(aevent, _), (bevent, _)| {
-                aevent
-                    .start
-                    .date()
-                    .month()
-                    .cmp(&bevent.start.date().month())
-                    .then(aevent.start.date().day().cmp(&bevent.start.date().day()))
-            });
-            for (event, style) in eventstuple {
-                ret += format!(
-                    "{} {}\n",
-                    convertstyle(style.stylenames.to_vec(), "·"),
-                    event
-                )
-                .as_str();
+            for pe in self.ctx.eventinstances.iter() {
+                ret += format!("{pe}\n").as_str();
             }
         }
         write!(f, "{}", ret)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::config::Style;
-    use crate::events::{Event, EventDateTime};
-    use chrono::{Duration, NaiveDate};
-
-    #[test]
-    fn test_fmt() {
-        let mut ctx = Context::default();
-        ctx.opts.agenda = true;
-        let e1: Event = Event {
-            summary: String::from("Fake Event"),
-            ..Default::default()
-        };
-        let e2: Event = Event {
-            start: EventDateTime::Date(NaiveDate::default() + Duration::weeks(56)),
-            summary: String::from("Fake Event"),
-            ..Default::default()
-        };
-        let s1: Style = Style::default();
-        let s2: Style = Style::default();
-        ctx.eventstuple.push((e1, s1));
-        ctx.eventstuple.push((e2, s2));
-        let a = Agenda { ctx: &ctx };
-        assert_eq![
-            format!("{}", a),
-            String::from("Agenda\n· Thu, Jan,  1: Fake Event\n· Thu, Jan, 28: Fake Event\n")
-        ];
     }
 }

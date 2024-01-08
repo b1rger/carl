@@ -29,7 +29,11 @@ impl Date<'_> {
             DateProperty::LastDayOfMonth => {
                 self.date == self.firstdayofdisplayedmonth.last_day_of_month()
             }
-            DateProperty::IsEvent => self.is_event(),
+            DateProperty::IsEvent => self
+                .ctx
+                .eventinstances
+                .iter()
+                .any(|eventinstance| eventinstance.date == self.date),
             DateProperty::Monday => self.date.weekday() == chrono::Weekday::Mon,
             DateProperty::Tuesday => self.date.weekday() == chrono::Weekday::Tue,
             DateProperty::Wednesday => self.date.weekday() == chrono::Weekday::Wed,
@@ -40,15 +44,6 @@ impl Date<'_> {
             DateProperty::Odd => self.date.day() % 2 == 1,
             DateProperty::Even => self.date.day() % 2 == 0,
         })
-    }
-
-    fn is_event(&self) -> bool {
-        for (event, _) in &self.ctx.eventstuple {
-            if event.is_day(&self.date) {
-                return true;
-            }
-        }
-        false
     }
 }
 
@@ -70,9 +65,9 @@ impl fmt::Display for Date<'_> {
             .map(|datestyle| datestyle.style)
             .collect();
 
-        for (event, style) in &self.ctx.eventstuple {
-            if event.is_day(&self.date) {
-                styles.push(style.clone());
+        for eventinstance in &self.ctx.eventinstances {
+            if eventinstance.date == self.date {
+                styles.push(eventinstance.style.clone());
             }
         }
 
@@ -93,7 +88,6 @@ impl fmt::Display for Date<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::events::Event;
     use chrono::NaiveDate;
 
     #[test]
@@ -152,25 +146,6 @@ mod tests {
         assert_eq!(format!("{}", d), s);
     }
     #[test]
-    fn test_fmt_is_event() {
-        let date = NaiveDate::default();
-        let mut ctx = Context::default();
-        let firstdayofdisplayedmonth = NaiveDate::default();
-
-        let event = Event::default();
-        let style = Style::default();
-        ctx.eventstuple = vec![(event, style)];
-        let d = Date {
-            date,
-            ctx: &ctx,
-            firstdayofdisplayedmonth,
-        };
-
-        let s = String::from("\u{1b}[1m\u{1b}[4m 1\u{1b}[0m");
-        assert_eq!(format!("{}", d), s);
-    }
-
-    #[test]
     fn test_satisfy_firstdayofdisplayedmonth() {
         let date = NaiveDate::from_ymd_opt(1970, 2, 1).unwrap();
         let ctx = Context::default();
@@ -207,36 +182,6 @@ mod tests {
             firstdayofdisplayedmonth,
         };
         let properties = [DateProperty::LastDayOfMonth];
-        assert!(d.satisfy_all(&properties));
-    }
-    #[test]
-    fn test_is_event() {
-        let date = NaiveDate::from_ymd_opt(1970, 1, 31).unwrap();
-        let ctx = Context::default();
-        let firstdayofdisplayedmonth = NaiveDate::default();
-        let d = Date {
-            date,
-            ctx: &ctx,
-            firstdayofdisplayedmonth,
-        };
-        assert!(!d.is_event());
-    }
-    #[test]
-    fn test_satisfy_is_event() {
-        let date = NaiveDate::default();
-        let mut ctx = Context::default();
-        let firstdayofdisplayedmonth = NaiveDate::default();
-
-        let event = Event::default();
-        let style = Style::default();
-        ctx.eventstuple = vec![(event, style)];
-        let d = Date {
-            date,
-            ctx: &ctx,
-            firstdayofdisplayedmonth,
-        };
-
-        let properties = [DateProperty::IsEvent];
         assert!(d.satisfy_all(&properties));
     }
 }

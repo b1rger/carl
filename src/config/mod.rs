@@ -5,7 +5,7 @@
 mod theme;
 
 pub use theme::StyleName::*;
-pub use theme::{DateProperty, DateStyle, Style, StyleName, StyleType, Theme};
+pub use theme::{DateProperty, Style, StyleName, StyleType, Theme};
 
 extern crate xdg;
 use clap::crate_name;
