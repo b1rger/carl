@@ -13,10 +13,8 @@ pub struct Agenda<'a> {
 impl fmt::Display for Agenda<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut ret: String = String::new();
-        if self.ctx.opts.agenda {
-            for pe in self.ctx.eventinstances.iter() {
-                ret += format!("{pe}\n").as_str();
-            }
+        for pe in self.ctx.eventinstances.iter() {
+            ret += format!("{pe}\n").as_str();
         }
         write!(f, "{}", ret)
     }

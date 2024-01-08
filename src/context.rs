@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use crate::cli::Cli;
+use crate::cli::{Action, Cli};
 use crate::config::StyleType;
 use crate::config::{Config, Theme};
 use crate::events::EventInstances;
@@ -22,7 +22,7 @@ pub struct Context {
 
 impl Context {
     pub fn new() -> Result<Context> {
-        let opts: Cli = Cli::parse();
+        let mut opts: Cli = Cli::parse();
         let config: Config = Config::read();
         let theme: Theme = if opts.theme.is_some() {
             Theme::read(&opts.theme)
@@ -41,6 +41,10 @@ impl Context {
             Err(x) => return Err(x),
         };
 
+        if opts.action == Action::default() {
+            opts.action.calendar = true;
+        }
+
         Ok(Context {
             usersetdate,
             opts,
@@ -56,7 +60,7 @@ impl Default for Context {
     fn default() -> Self {
         Context {
             usersetdate: NaiveDate::default(),
-            opts: Cli::default(),
+            opts: Cli::parse(),
             config: Config::default(),
             theme: Theme::default(),
             styletype: StyleType::Light,
