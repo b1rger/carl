@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 use crate::events::{Event, EventDateTime, Events};
-use crate::utils::DateRange;
+use chrono::Duration;
 use icalendar::{Calendar, CalendarDateTime, Component, DatePerhapsTime, Event as IcalendarEvent};
 use rrule::RRuleSet;
+use std::cmp::max;
 use std::path::{Path, PathBuf};
 
 impl From<icalendar::DatePerhapsTime> for EventDateTime {
@@ -47,7 +48,8 @@ impl TryFrom<&IcalendarEvent> for Event {
             };
             let mut rrulesets: Vec<RRuleSet> = vec![];
             if !rrulestring.is_empty() {
-                for date in DateRange(start.date(), end.date()) {
+                let mut date = start.date();
+                while date < max(start.date() + Duration::days(1), end.date()) {
                     let rrule = format!(
                         "DTSTART;VALUE=DATE:{}\n{rrulestring}",
                         date.format("%Y%m%d")
@@ -55,6 +57,7 @@ impl TryFrom<&IcalendarEvent> for Event {
                     if let Ok(x) = rrule.parse() {
                         rrulesets.push(x);
                     }
+                    date += Duration::days(1);
                 }
             }
             Ok(Event {
