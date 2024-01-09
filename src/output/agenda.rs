@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::Context;
+use anstyle::Style;
 
 use std::fmt;
 
@@ -12,9 +13,10 @@ pub struct Agenda<'a> {
 
 impl fmt::Display for Agenda<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut ret: String = String::new();
-        for pe in self.ctx.eventinstances.iter() {
-            ret += format!("{pe}\n").as_str();
+        let style = Style::default().bold();
+        let mut ret: String = format!("{}Agenda:{}\n", style.render(), style.render_reset());
+        for ei in self.ctx.eventinstances.iter() {
+            ret += format!("{ei}\n").as_str();
         }
         write!(f, "{}", ret)
     }
