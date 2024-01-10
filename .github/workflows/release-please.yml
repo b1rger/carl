@@ -17,3 +17,4 @@ jobs:
         with:
           release-type: rust
           package-name: carl
+          bump-minor-pre-major: true
