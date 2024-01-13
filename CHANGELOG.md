@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://github.com/b1rger/carl/compare/v0.2.1...v0.3.0) (2024-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** allow exclusive actions
+
+### Features
+
+* **agenda:** implement agenda with eventinstances ([8b008aa](https://github.com/b1rger/carl/commit/8b008aaee7a54d411bc558be2bbd1773875ae734))
+* **cli:** allow exclusive actions ([1f2a7c0](https://github.com/b1rger/carl/commit/1f2a7c00e634fca5bc9e287d4f68c431a4fce7b9)), closes [#97](https://github.com/b1rger/carl/issues/97)
+* implement year progress feature ([9652441](https://github.com/b1rger/carl/commit/96524414d67101c1c3f3e2e8755eadb8b0ef4d63)), closes [#92](https://github.com/b1rger/carl/issues/92)
+
+
+### Bug Fixes
+
+* also show julian date in agenda ([3ca35b3](https://github.com/b1rger/carl/commit/3ca35b3b74eb473d1758376754ff64c97f9fb3fa)), closes [#100](https://github.com/b1rger/carl/issues/100)
+* readd agenda header and style it ([a74337a](https://github.com/b1rger/carl/commit/a74337ab219e2fc37a7c90b9a898e998705bd222))
+
 ## [0.2.1](https://github.com/b1rger/carl/compare/v0.2.0...v0.2.1) (2024-01-06)
 
 
