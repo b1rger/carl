@@ -14,7 +14,7 @@ categories = ["command-line-utilities", "date-and-time"]
 [dependencies]
 anyhow = "1.0"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-clap = { version = "4.4.13", features = ["derive", "cargo"] }
+clap = { version = "4.5.3", features = ["derive", "cargo"] }
 toml = "0.8.*"
 serde = { version = "1.0", features = ["derive"] }
 xdg = "2.5.2"
