@@ -3,6 +3,5 @@
 // SPDX-License-Identifier: MIT
 
 pub mod agenda;
-pub mod calendar;
 pub mod date;
 pub mod yearprogress;

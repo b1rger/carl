@@ -17,6 +17,7 @@ use std::fs;
 pub struct Config {
     pub theme: Option<String>,
     pub ical: Vec<IcalStyle>,
+    pub templates: Option<String>,
 }
 
 impl Config {

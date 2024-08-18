@@ -18,6 +18,8 @@ pub struct Context {
     pub theme: Theme,
     pub styletype: StyleType,
     pub eventinstances: EventInstances,
+    pub daterangebegin: chrono::NaiveDate,
+    pub daterangeend: chrono::NaiveDate,
 }
 
 impl Context {
@@ -52,6 +54,8 @@ impl Context {
             theme,
             styletype,
             eventinstances: vec![],
+            daterangebegin: usersetdate,
+            daterangeend: usersetdate,
         })
     }
 }
@@ -65,6 +69,8 @@ impl Default for Context {
             theme: Theme::default(),
             styletype: StyleType::Light,
             eventinstances: vec![],
+            daterangebegin: NaiveDate::default(),
+            daterangeend: NaiveDate::default(),
         }
     }
 }

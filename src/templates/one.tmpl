@@ -1,0 +1,9 @@
+{% set header = dates[7]|dateformat(format="[month repr:long] [year]") %}
+{% set width = 17 - header|length %}
+{% for something in range(0, width/2) %} {% endfor %}{{ header }}
+{% for date in dates[0:7] -%}{% set weekday = date|dateformat(format="[weekday]") %}{{ weekday[0:2] }} {% endfor %}
+{% for date in dates -%}
+{{ date|dateformat(format="[day padding:space]") }} 
+{%- if loop.index % 7 == 0 %}
+{% else %} {% endif %}
+{%- endfor %}

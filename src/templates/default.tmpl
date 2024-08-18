@@ -1,0 +1,6 @@
+{% for monthline in months|months_into_columns(columns) %}
+{% for num in range(0, columns) %}Mo Tu We Th Fr Sa Su  {% endfor %}
+{% for line in monthline -%}
+{% for week in line %}{% for day in week %}{{ day|dateformat(format="[day padding:space]") }} {% endfor %} {% endfor %}
+{% endfor %}
+{% endfor %}

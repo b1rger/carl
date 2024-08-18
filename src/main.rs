@@ -6,6 +6,7 @@ mod cli;
 mod config;
 mod context;
 mod events;
+mod filters;
 mod output;
 mod utils;
 
@@ -13,22 +14,20 @@ extern crate clap;
 extern crate serde;
 extern crate toml;
 extern crate xdg;
+use chrono::Datelike;
 use chrono::Duration;
 use std::process;
 
+use crate::filters::months_into_columns;
 use context::Context;
 use events::{Events, ReadFromIcsFile};
+use minijinja::{render, Environment};
 use output::agenda::Agenda;
-use output::calendar::Calendar;
-use output::date::Date;
 use output::yearprogress::Yearprogress;
 use utils::DateExtensions;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
-    let mut columns = 1;
-    let mut months: Vec<chrono::NaiveDate> = vec![];
-
     let mut ctx: Context;
     match Context::new() {
         Ok(x) => ctx = x,
@@ -38,50 +37,69 @@ fn main() {
         }
     }
 
-    let mut daterangebegin: chrono::NaiveDate = ctx.usersetdate.first_day_of_month();
-    let mut daterangeend: chrono::NaiveDate = ctx.usersetdate.last_day_of_month();
+    let mut env = Environment::new();
+    env.add_filter("months_into_columns", months_into_columns);
+    minijinja_contrib::add_to_environment(&mut env);
+
+    ctx.daterangebegin = ctx
+        .usersetdate
+        .first_day_of_month()
+        .first_day_of_week_before_first_day_of_month(ctx.opts.sunday);
+    ctx.daterangeend = ctx
+        .usersetdate
+        .last_day_of_month()
+        .last_day_of_week_after_last_day_of_month(ctx.opts.sunday);
+    let mut daterange: Vec<String> = vec![ctx.usersetdate.format("%Y-%m").to_string()];
+    let mut columns = 1;
 
     if ctx.opts.three {
-        daterangebegin = (ctx.usersetdate - Duration::weeks(4)).first_day_of_month();
-        daterangeend = (ctx.usersetdate + Duration::weeks(4)).last_day_of_month();
-        months.push(daterangebegin);
-        months.push(ctx.usersetdate);
-        months.push(daterangeend);
+        ctx.daterangebegin = (ctx.usersetdate - Duration::weeks(4)).first_day_of_month();
+        ctx.daterangeend = (ctx.usersetdate + Duration::weeks(4)).last_day_of_month();
+        daterange.push(
+            (ctx.usersetdate.first_day_of_month() - Duration::days(1))
+                .format("%Y-%m")
+                .to_string(),
+        );
+        daterange.push(
+            (ctx.usersetdate.last_day_of_month() + Duration::days(1))
+                .format("%Y-%m")
+                .to_string(),
+        );
         columns = 3;
     }
     if ctx.opts.year {
-        daterangebegin = ctx.usersetdate.first_day_of_year();
-        daterangeend = ctx.usersetdate.last_day_of_year();
-        let mut tmpdate = daterangebegin;
-        while tmpdate < daterangeend {
-            months.push(tmpdate);
-            tmpdate = tmpdate.first_day_of_next_month();
+        ctx.daterangebegin = ctx.usersetdate.first_day_of_year();
+        ctx.daterangeend = ctx.usersetdate.last_day_of_year();
+        for month in 1..=12 {
+            if month != ctx.usersetdate.month() {
+                daterange.push(format!("{}-{}", ctx.usersetdate.year(), month));
+            }
         }
         columns = 3;
     }
-    if !ctx.opts.three && !ctx.opts.year {
-        months.push(ctx.usersetdate);
+    if ctx.opts.action.calendar {
+        let template = include_str!("templates/default.tmpl").to_string();
+        print!(
+            "{}",
+            render!(in env, &template, months=>daterange, columns=>columns)
+        );
     }
 
     for icalstyle in &ctx.config.ical {
         for event in Events::read_from_ics_file(&icalstyle.file) {
             ctx.eventinstances.append(&mut event.instances(
-                &daterangebegin,
-                &daterangeend,
+                &ctx.daterangebegin,
+                &ctx.daterangeend,
                 &icalstyle.style,
             ));
         }
     }
     ctx.eventinstances.sort_by(|a, b| a.date.cmp(&b.date));
 
-    if ctx.opts.action.calendar {
-        let calendar = Calendar {
-            dates: months,
-            columns,
-            ctx: &ctx,
-        };
+    /*if ctx.opts.action.calendar {
+        let calendar = Calendar { ctx: &ctx };
         print!("{}", calendar);
-    }
+    }*/
 
     if ctx.opts.action.agenda {
         let agenda = Agenda { ctx: &ctx };
