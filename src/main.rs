@@ -13,7 +13,6 @@ extern crate clap;
 extern crate serde;
 extern crate toml;
 extern crate xdg;
-use chrono::Duration;
 use std::process;
 
 use context::Context;
@@ -42,8 +41,16 @@ fn main() {
     let mut daterangeend: chrono::NaiveDate = ctx.usersetdate.last_day_of_month();
 
     if ctx.opts.three {
-        daterangebegin = (ctx.usersetdate - Duration::weeks(4)).first_day_of_month();
-        daterangeend = (ctx.usersetdate + Duration::weeks(4)).last_day_of_month();
+        daterangebegin = ctx
+            .usersetdate
+            .first_day_of_month()
+            .pred_opt()
+            .unwrap()
+            .first_day_of_month();
+        daterangeend = ctx
+            .usersetdate
+            .first_day_of_next_month()
+            .last_day_of_month();
         months.push(daterangebegin);
         months.push(ctx.usersetdate);
         months.push(daterangeend);
