@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/b1rger/carl/compare/v0.3.0...v0.3.1) (2024-08-31)
+
+
+### Bug Fixes
+
+* correct getting months for -3 ([7cdeda0](https://github.com/b1rger/carl/commit/7cdeda0e1f4851f62e7c13d136022ea4c778c955))
+
 ## [0.3.0](https://github.com/b1rger/carl/compare/v0.2.1...v0.3.0) (2024-01-13)
 
 
