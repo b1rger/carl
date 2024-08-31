@@ -18,10 +18,10 @@ use chrono::Datelike;
 use chrono::Duration;
 use std::process;
 
-use crate::filters::months_into_columns;
+use crate::filters::{months_into_columns, printdate};
 use context::Context;
 use events::{Events, ReadFromIcsFile};
-use minijinja::{render, Environment};
+use minijinja::{render, Environment, Value};
 use output::agenda::Agenda;
 use output::yearprogress::Yearprogress;
 use utils::DateExtensions;
@@ -39,6 +39,8 @@ fn main() {
 
     let mut env = Environment::new();
     env.add_filter("months_into_columns", months_into_columns);
+    env.add_filter("printdate", printdate);
+    env.add_global("context", Value::from_serialize(&ctx));
     minijinja_contrib::add_to_environment(&mut env);
 
     ctx.daterangebegin = ctx

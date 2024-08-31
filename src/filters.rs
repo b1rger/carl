@@ -1,5 +1,6 @@
 use crate::utils::DateExtensions;
 use chrono::Duration;
+use minijinja::State;
 use std::collections::HashSet;
 pub type Week = Vec<String>;
 pub type Line = Vec<Week>;
@@ -51,4 +52,9 @@ pub fn months_into_columns(months: Vec<String>, columns: usize) -> Vec<MonthLine
         ret.push(monthlines);
     }
     ret
+}
+
+pub fn printdate(state: &State, datestring: String) -> String {
+    if let Ok(date) = chrono::NaiveDate::parse_from_str(&datestring, "%Y-%m-%d") {}
+    datestring
 }

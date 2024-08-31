@@ -10,13 +10,14 @@ use crate::utils::convertstyle;
 use chrono::prelude::*;
 use chrono::Duration;
 use rrule::{RRuleSet, Tz};
+use serde::Serialize;
 use std::fmt;
 
-#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy, Serialize)]
 pub enum EventDateTime {
     DateTime {
         date_time: chrono::NaiveDateTime,
-        offset: Option<chrono::offset::FixedOffset>,
+        offset: Option<i32>,
     },
     Date(chrono::NaiveDate),
 }
@@ -30,7 +31,7 @@ impl EventDateTime {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct EventInstance {
     pub date: chrono::NaiveDate,
     pub event: Event,
@@ -46,7 +47,7 @@ impl fmt::Display for EventInstance {
 
 pub type EventInstances = Vec<EventInstance>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Event {
     pub start: EventDateTime,
     pub end: EventDateTime,
