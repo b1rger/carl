@@ -56,6 +56,17 @@ fn main() {
         months.push(daterangeend);
         columns = 3;
     }
+    if let Some(num) = ctx.opts.months {
+        daterangebegin = ctx.usersetdate.first_day_of_month();
+        let mut tmpdate = daterangebegin;
+        months.push(tmpdate);
+        for _ in 1..=(num - 1) {
+            tmpdate = tmpdate.first_day_of_next_month();
+            months.push(tmpdate);
+        }
+        daterangeend = tmpdate.last_day_of_month();
+        columns = 3;
+    }
     if ctx.opts.year {
         daterangebegin = ctx.usersetdate.first_day_of_year();
         daterangeend = ctx.usersetdate.last_day_of_year();
@@ -66,7 +77,7 @@ fn main() {
         }
         columns = 3;
     }
-    if !ctx.opts.three && !ctx.opts.year {
+    if !ctx.opts.three && !ctx.opts.year && ctx.opts.months.is_none() {
         months.push(ctx.usersetdate);
     }
 
