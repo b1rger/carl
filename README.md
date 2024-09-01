@@ -65,14 +65,15 @@ cargo install carl
 
 - **-1**, **--one**: Display single month output.  (This is the default.)
 - **-3**, **--three**: Display prev/current/next month output.
+- **-n**, **--months NUMBER**: Display current and following months.
 - **-s**, **--sunday**: Display Sunday as the first day of the week.
 - **-m**, **--monday**: Display Monday as the first day of the week.
 - **-j**, **--julian**: Display Julian dates (days one-based, numbered from January 1).
 - **-y**, **--year**: Display a calendar for the current year.
 - **-V**, **--version**: Display version information and exit.
 - **-h**, **--help**: Display help screen and exit.
-- **--theme**: Set the theme that should be used
-- **--themestyletype**: "dark" or "light", use the theme styles marked for "dark" or for "light" backgrounds. Defaults to "light"
+- **--theme THEME**: Set the theme that should be used
+- **--themestyletype TYPE**: "dark" or "light", use the theme styles marked for "dark" or for "light" backgrounds. Defaults to "light"
 - **-a**, **--agenda**: Display agenda (a listing of all the events that occur in the the displayed calendar timespan) below the calendar
 
 ## Commandline options
