@@ -6,6 +6,7 @@ use crate::utils::{DateExtensions, MonthFullWeeksIter};
 use crate::Context;
 use crate::Date;
 use chrono::{Duration, NaiveDate};
+use std::cmp::min;
 
 use std::fmt;
 
@@ -51,7 +52,7 @@ impl fmt::Display for Calendar<'_> {
 
             // .. then display the weekdays
             let weekdays = self.weekdays();
-            for _ in 0..self.columns {
+            for _ in 0..min(chunk.len(), self.columns) {
                 ret = format!("{}{:^width$} ", ret, weekdays, width = width);
             }
             ret = format!("{}\n", ret);
