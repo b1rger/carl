@@ -9,30 +9,40 @@ use clap::{crate_authors, crate_name, crate_version, Args, Parser};
 #[derive(Parser)]
 #[clap(version = crate_version!(), author = crate_authors!(","), about = "Display a calendar")]
 pub struct Cli {
-    #[clap(short = '1', long = "one", help = "show only current month (default)", conflicts_with_all = &["three", "year", "months"])]
+    #[clap(short = '1', long = "one",
+           help = "show only current month (default)",
+           conflicts_with_all = &["three", "year", "months"])]
     pub one: bool,
-    #[clap(
-        short = '3',
-        long = "three",
-        help = "show previous, current and next month",
-        conflicts_with_all = &["one", "year", "months"]
+
+    #[clap(short = '3',
+           long = "three",
+           help = "show previous, current and next month",
+           conflicts_with_all = &["one", "year", "months"]
     )]
     pub three: bool,
+
     #[clap(short = 'n', long = "months",
            value_name="NUMBER", value_parser = clap::value_parser!(u8).range(1..),
            help = "show current and following months, in total NUMBER months",
            conflicts_with_all = &["one", "three", "year"])]
     pub months: Option<u8>,
-    #[clap(short = 'y', long = "year", help = "show whole current year", conflicts_with_all = &["one", "three", "months"])]
+
+    #[clap(short = 'y', long = "year",
+           help = "show whole current year",
+           conflicts_with_all = &["one", "three", "months"])]
     pub year: bool,
+
     #[clap(short = 's', long = "sunday", help = "Sunday as first day of week")]
     pub sunday: bool,
     #[clap(short = 'm', long = "monday", help = "Monday as first day of week")]
     pub monday: bool,
+
     #[clap(short = 'j', long = "julian", help = "output Julian dates")]
     pub julian: bool,
 
-    #[clap(long = "themestyletype", help = "select dark or light theme styles", value_parser=["dark", "light"])]
+    #[clap(long = "themestyletype",
+           help = "select dark or light theme styles",
+           value_parser=["dark", "light"])]
     pub themestyletype: Option<String>,
     #[clap(long = "theme", help = "select theme by name", num_args(1))]
     pub theme: Option<String>,
