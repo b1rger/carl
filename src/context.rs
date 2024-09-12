@@ -6,7 +6,6 @@ use crate::cli::{Action, Cli};
 use crate::config::StyleType;
 use crate::config::{Config, Theme};
 use crate::events::EventInstances;
-use anyhow::Result;
 use chrono::prelude::*;
 use clap::Parser;
 
@@ -21,7 +20,7 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new() -> Result<Context> {
+    pub fn new() -> Result<Context, String> {
         let mut opts: Cli = Cli::parse();
         let config: Config = Config::read();
         let theme: Theme = if opts.theme.is_some() {

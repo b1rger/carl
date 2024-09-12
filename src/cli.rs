@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-use anyhow::{anyhow, Result};
 use chrono::prelude::*;
 use clap::{crate_authors, crate_name, crate_version, Args, Parser};
 
@@ -66,7 +65,7 @@ pub struct Action {
 }
 
 impl Cli {
-    pub fn validate_date(&self) -> Result<chrono::NaiveDate> {
+    pub fn validate_date(&self) -> Result<chrono::NaiveDate, String> {
         let mut today: chrono::NaiveDate = Local::now().date_naive();
         let mut year: i32 = today.year();
         let mut month: u32 = today.month();
@@ -76,7 +75,7 @@ impl Cli {
             year = match self.date[0].parse() {
                 Ok(x) => {
                     if x > 9999 {
-                        return Err(anyhow!(
+                        return Err(format!(
                             "{}: illegal year value: use 1-9999: {}",
                             crate_name!(),
                             x
@@ -85,7 +84,7 @@ impl Cli {
                     x
                 }
                 Err(x) => {
-                    return Err(anyhow!(
+                    return Err(format!(
                         "{}: illegal year value: use 1-9999: {}",
                         crate_name!(),
                         x
@@ -97,7 +96,7 @@ impl Cli {
             month = match self.date[1].parse() {
                 Ok(x) => {
                     if x > 12 {
-                        return Err(anyhow!(
+                        return Err(format!(
                             "{}: illegal month value: use 1-12: {}",
                             crate_name!(),
                             x
@@ -106,7 +105,7 @@ impl Cli {
                     x
                 }
                 Err(x) => {
-                    return Err(anyhow!(
+                    return Err(format!(
                         "{}: illegal month value: use 1-12: {}",
                         crate_name!(),
                         x
@@ -119,7 +118,7 @@ impl Cli {
             day = match self.date[2].parse() {
                 Ok(x) => {
                     if x > 31 {
-                        return Err(anyhow!(
+                        return Err(format!(
                             "{}: illegal day value: use 1-12: {}",
                             crate_name!(),
                             x
@@ -128,7 +127,7 @@ impl Cli {
                     x
                 }
                 Err(x) => {
-                    return Err(anyhow!(
+                    return Err(format!(
                         "{}: illegal day value: use 1-12: {}",
                         crate_name!(),
                         x
