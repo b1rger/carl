@@ -5,9 +5,10 @@
 use anyhow::{anyhow, Result};
 use chrono::prelude::*;
 use clap::{crate_authors, crate_name, crate_version, Args, Parser};
+use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Parser, Serialize)]
+#[derive(Parser, Serialize, Deserialize)]
 #[clap(version = crate_version!(), author = crate_authors!(","), about = "Display a calendar")]
 pub struct Cli {
     #[clap(short = '1', long = "one", help = "show only current month (default)", conflicts_with_all = &["three", "year"])]
@@ -40,7 +41,7 @@ pub struct Cli {
     pub action: Action,
 }
 
-#[derive(Args, Clone, Default, PartialEq, Serialize)]
+#[derive(Args, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[group(required = false, multiple = true)]
 pub struct Action {
     #[clap(short = 'c', long = "calendar", help = "show calendar (default)")]

@@ -1,6 +1,10 @@
+use crate::events::EventInstances;
+use crate::output::date::Date;
 use crate::utils::DateExtensions;
+use crate::Context;
 use chrono::Duration;
 use minijinja::State;
+use serde::Deserialize;
 use std::collections::HashSet;
 pub type Week = Vec<String>;
 pub type Line = Vec<Week>;
@@ -55,6 +59,17 @@ pub fn months_into_columns(months: Vec<String>, columns: usize) -> Vec<MonthLine
 }
 
 pub fn printdate(state: &State, datestring: String) -> String {
-    if let Ok(date) = chrono::NaiveDate::parse_from_str(&datestring, "%Y-%m-%d") {}
+    if let Ok(date) = chrono::NaiveDate::parse_from_str(&datestring, "%Y-%m-%d") {
+        let value = state.lookup("context").unwrap();
+        //let events = EventInstances::deserialize(value).unwrap();
+        let context = Context::deserialize(value).unwrap();
+        let date = Date {
+            date: date,
+            ctx: &context,
+            firstdayofdisplayedmonth: date.first_day_of_month(),
+        };
+        return format!("{}", date);
+        //print!("{:?}\n\n", context);
+    }
     datestring
 }

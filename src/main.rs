@@ -40,8 +40,6 @@ fn main() {
     let mut env = Environment::new();
     env.add_filter("months_into_columns", months_into_columns);
     env.add_filter("printdate", printdate);
-    env.add_global("context", Value::from_serialize(&ctx));
-    minijinja_contrib::add_to_environment(&mut env);
 
     ctx.daterangebegin = ctx
         .usersetdate
@@ -54,6 +52,20 @@ fn main() {
     let mut daterange: Vec<String> = vec![ctx.usersetdate.format("%Y-%m").to_string()];
     let mut columns = 1;
 
+    for icalstyle in &ctx.config.ical {
+        for event in Events::read_from_ics_file(&icalstyle.file) {
+            ctx.eventinstances.append(&mut event.instances(
+                &ctx.daterangebegin,
+                &ctx.daterangeend,
+                &icalstyle.style,
+            ));
+        }
+    }
+    ctx.eventinstances.sort_by(|a, b| a.date.cmp(&b.date));
+    env.add_global("events", Value::from_serialize(&ctx.eventinstances));
+
+    env.add_global("context", Value::from_serialize(&ctx));
+    minijinja_contrib::add_to_environment(&mut env);
     if ctx.opts.three {
         ctx.daterangebegin = (ctx.usersetdate - Duration::weeks(4)).first_day_of_month();
         ctx.daterangeend = (ctx.usersetdate + Duration::weeks(4)).last_day_of_month();
@@ -86,17 +98,6 @@ fn main() {
             render!(in env, &template, months=>daterange, columns=>columns)
         );
     }
-
-    for icalstyle in &ctx.config.ical {
-        for event in Events::read_from_ics_file(&icalstyle.file) {
-            ctx.eventinstances.append(&mut event.instances(
-                &ctx.daterangebegin,
-                &ctx.daterangeend,
-                &icalstyle.style,
-            ));
-        }
-    }
-    ctx.eventinstances.sort_by(|a, b| a.date.cmp(&b.date));
 
     /*if ctx.opts.action.calendar {
         let calendar = Calendar { ctx: &ctx };

@@ -9,10 +9,11 @@ use crate::events::EventInstances;
 use anyhow::Result;
 use chrono::prelude::*;
 use clap::Parser;
+use serde::Deserialize;
 use serde::Serialize;
 
 // A struct storing the combined settings of config file, theme, options, ...
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Context {
     pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
