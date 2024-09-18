@@ -20,6 +20,7 @@ xdg = "2.5.2"
 anstyle = "1.0.8"
 icalendar = "0.16"
 rrule = "0.11.0"
+minijinja = "2.3.1"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
