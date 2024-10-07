@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/b1rger/carl/compare/v0.3.1...v0.4.0) (2024-09-16)
+
+
+### Features
+
+* implement -n, --months &lt;num&gt; ([0bf5887](https://github.com/b1rger/carl/commit/0bf58875e68b7aa19a3cc74442ed1ebc26fca71a))
+
+
+### Bug Fixes
+
+* don't print more weekdays headers than we have months in the chunk ([ad60895](https://github.com/b1rger/carl/commit/ad608951c4ebe2181af8f1aaecaff2526f6cebc7))
+
 ## [0.3.1](https://github.com/b1rger/carl/compare/v0.3.0...v0.3.1) (2024-08-31)
 
 
