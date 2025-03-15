@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 mod date_extensions;
-mod helpers;
+pub mod helpers;
+pub mod jinja_functions;
 
-pub use date_extensions::{DateExtensions, MonthFullWeeksIter};
-pub use helpers::convertstyle;
+pub use date_extensions::DateExtensions;
