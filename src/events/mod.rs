@@ -6,17 +6,17 @@ mod ics;
 pub use ics::ReadFromIcsFile;
 
 use crate::config::Style;
-use crate::utils::convertstyle;
+use crate::utils::helpers::tostyle;
 use chrono::prelude::*;
 use chrono::Duration;
 use rrule::{RRuleSet, Tz};
-use std::fmt;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum EventDateTime {
     DateTime {
         date_time: chrono::NaiveDateTime,
-        offset: Option<chrono::offset::FixedOffset>,
+        offset: Option<i32>,
     },
     Date(chrono::NaiveDate),
 }
@@ -30,23 +30,17 @@ impl EventDateTime {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventInstance {
     pub date: chrono::NaiveDate,
     pub event: Event,
     pub style: Style,
-}
-
-impl fmt::Display for EventInstance {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let style = convertstyle(self.style.stylenames.to_vec(), "·");
-        write!(f, "{} {}: {}", style, self.date, self.event.summary)
-    }
+    pub stylestr: String,
 }
 
 pub type EventInstances = Vec<EventInstance>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Event {
     pub start: EventDateTime,
     pub end: EventDateTime,
@@ -73,6 +67,7 @@ impl Event {
                         date,
                         event: self.clone(),
                         style: style.clone(),
+                        stylestr: tostyle(style.stylenames.clone()).render().to_string(),
                     });
                 }
             } else {
@@ -82,6 +77,7 @@ impl Event {
                             date,
                             event: self.clone(),
                             style: style.clone(),
+                            stylestr: tostyle(style.stylenames.clone()).render().to_string(),
                         });
                     }
                     date += Duration::days(1);
@@ -102,6 +98,7 @@ impl Event {
                             date: date.date_naive(),
                             event: self.clone(),
                             style: style.clone(),
+                            stylestr: tostyle(style.stylenames.clone()).render().to_string(),
                         })
                         .collect::<EventInstances>(),
                 );
@@ -121,27 +118,6 @@ impl Default for Event {
             rrulesets: vec![],
             summary: String::from("Default Event"),
         }
-    }
-}
-
-impl fmt::Display for Event {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let startformatstring = match self.start {
-            EventDateTime::DateTime { date_time, offset } => {
-                if let Some(x) = offset {
-                    format!("{} ({})", date_time.format("%a, %b, %e (%H:%M)"), x)
-                } else {
-                    date_time.format("%a, %b, %e (%H:%M)").to_string()
-                }
-            }
-            EventDateTime::Date(x) => x.format("%a, %b, %e").to_string(),
-        };
-        write!(
-            f,
-            "{}: {}",
-            startformatstring,
-            self.summary.replace('\\', "")
-        )
     }
 }
 

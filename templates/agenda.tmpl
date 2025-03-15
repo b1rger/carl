@@ -1,0 +1,6 @@
+{% if cli.action.agenda -%}
+Agenda:
+{% for event in event_instances -%}
+{{ event.stylestr }}* {{ event.date|dateformat }}: {{ event.event.summary }}{{ reset_style() }}
+{% endfor -%}
+{% endif -%}

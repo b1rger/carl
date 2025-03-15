@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::prelude::*;
-use chrono::Days;
 use chrono::Duration;
 use chrono::Months;
 
@@ -15,7 +14,6 @@ pub trait DateExtensions {
     fn first_day_of_next_month(&self) -> chrono::NaiveDate;
     fn first_day_of_week_before_first_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate;
     fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate;
-    fn month_full_weeks_iter(&self, from_sunday: bool) -> MonthFullWeeksIter;
 }
 
 impl DateExtensions for chrono::NaiveDate {
@@ -77,48 +75,6 @@ impl DateExtensions for chrono::NaiveDate {
             last_day_plus_one_week.weekday().num_days_from_monday()
         };
         last_day_plus_one_week - Duration::days(days_to_weekstart.into()) - Duration::days(1)
-    }
-
-    fn month_full_weeks_iter(&self, from_sunday: bool) -> MonthFullWeeksIter {
-        MonthFullWeeksIter {
-            base_date: *self,
-            current_date: self.first_day_of_week_before_first_day_of_month(from_sunday),
-            from_sunday,
-        }
-    }
-}
-
-pub struct MonthFullWeeksIter {
-    pub base_date: chrono::NaiveDate,
-    current_date: chrono::NaiveDate,
-    from_sunday: bool,
-}
-
-impl MonthFullWeeksIter {
-    pub fn empty(&self) -> bool {
-        self.current_date
-            >= self
-                .base_date
-                .last_day_of_week_after_last_day_of_month(self.from_sunday)
-    }
-}
-
-impl Iterator for MonthFullWeeksIter {
-    type Item = chrono::NaiveDate;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let old = self.current_date;
-        self.current_date = old + Days::new(1);
-
-        if old
-            <= self
-                .base_date
-                .last_day_of_week_after_last_day_of_month(self.from_sunday)
-        {
-            Some(old)
-        } else {
-            None
-        }
     }
 }
 
