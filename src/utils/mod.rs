@@ -5,6 +5,5 @@
 mod date_extensions;
 pub mod helpers;
 pub mod jinja_functions;
-pub mod jinja_filters;
 
 pub use date_extensions::DateExtensions;

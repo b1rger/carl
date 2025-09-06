@@ -16,9 +16,8 @@ extern crate xdg;
 use std::process;
 
 use crate::utils::jinja_functions::reset_style;
-use crate::utils::jinja_filters::dates_to_columns;
 use crate::utils::helpers::generate_dates_from_to;
-use crate::template::DateStyler;
+use crate::template::{DateStyler,DateToColumnsGenerator};
 use crate::events::{Events, ReadFromIcsFile};
 use context::Context;
 use minijinja::{path_loader, Environment, context};
@@ -55,15 +54,15 @@ fn main() {
     env.set_loader(path_loader("templates"));
     minijinja_contrib::add_to_environment(&mut env);
 
-    env.add_function("reset_style", reset_style);
-    env.add_filter("dates_to_columns", dates_to_columns);
     let date_styler = DateStyler::new(event_instances.clone(), ctx.usersetdate.clone(), ctx.theme.clone());
     let template_context = context! { 
-        event_instances => event_instances,
-        columns => ctx.columns,
         cli => ctx.opts,
+        columns => ctx.columns,
         dates_per_month => dates_per_month,
-        style_date => minijinja::Value::from_object(date_styler)
+        dates_to_columns => minijinja::Value::from_object(DateToColumnsGenerator::new()),
+        event_instances => event_instances,
+        style_date => minijinja::Value::from_object(date_styler),
+        reset_style => minijinja::Value::from_function(reset_style),
     };
 
     let tmpl = env.get_template("carl.tmpl").unwrap();

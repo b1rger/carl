@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use crate::events::EventInstance;
 use minijinja::value::{Object, Value, from_args};
+use minijinja::value::ViaDeserialize;
 use crate::config::Theme;
 use crate::utils::helpers::{satisfy_all, tostyle};
 use crate::utils::DateExtensions;
@@ -57,5 +58,42 @@ impl Object for DateStyler {
             return Ok(tostyle(stylenames).render().to_string().into());
         }
         Ok(date.into())
+    }
+}
+
+#[derive(Debug)]
+pub(crate) struct DateToColumnsGenerator {}
+
+impl DateToColumnsGenerator {
+    pub(crate) fn new() -> Self {
+        Self {}
+    }
+}
+
+impl Object for DateToColumnsGenerator {
+    fn call(self: &Arc<DateToColumnsGenerator>, _state: &minijinja::State, args: &[Value]) -> Result<Value, minijinja::Error> {
+        let (dates, columns, ): (ViaDeserialize<Vec<Vec<chrono::NaiveDate>>>, usize) = from_args(args)?;
+        let mut months_columns: Vec<Vec<Vec<chrono::NaiveDate>>> = vec![];
+        for chunk in dates.chunks(columns) {
+            months_columns.push(chunk.to_vec());
+        }
+        let mut ret: Vec<Vec<Vec<Option<chrono::NaiveDate>>>> = vec![];
+        for mut row in months_columns {
+            let mut monthlines: Vec<Vec<Option<chrono::NaiveDate>>> = vec![];
+            while row.iter().any(|x| !x.is_empty()) {
+                let mut line: Vec<Option<chrono::NaiveDate>> = vec![];
+                for month in &mut row {
+                    let mut foo: Vec<Option<chrono::NaiveDate>> = if month.len() >= 7 {
+                        month.drain(..7).map(|x| Some(x)).collect()
+                    } else {
+                        vec![None; 7]
+                    };
+                    line.append(&mut foo);
+                }
+                monthlines.push(line);
+            }
+            ret.push(monthlines)
+        }
+        Ok(Value::from_serialize(ret))
     }
 }

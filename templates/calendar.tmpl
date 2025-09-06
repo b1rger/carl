@@ -2,7 +2,7 @@
 ## This is the main template file for the calendar output
 ## We first set some helper variables
 ## The first_seven_dates are used for displaying the weekdays
-{%- set dates = dates_per_month|dates_to_columns(columns) -%}
+{%- set dates = dates_to_columns(dates_per_month, columns) -%}
 {%- set first_seven_dates = dates[0][0][0:7] -%}
 {%- for row in dates -%}
 {% set number_of_columns = row[0]|length/7 %}
