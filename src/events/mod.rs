@@ -30,7 +30,7 @@ impl EventDateTime {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Debug, Clone, Deserialize)]
 pub struct EventInstance {
     pub date: chrono::NaiveDate,
     pub event: Event,

@@ -5,24 +5,21 @@
 use crate::cli::{Action, Cli};
 use crate::config::StyleType;
 use crate::config::{Config, Theme};
-use crate::events::EventInstance;
-use crate::events::{Events, ReadFromIcsFile};
-use crate::utils::helpers::{generate_dates_from_to, MyDate};
 use crate::utils::DateExtensions;
 use chrono::prelude::*;
 use clap::Parser;
-use minijinja::value::{Object, Value};
-use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use serde::Deserialize;
 
 // A struct storing the combined settings of config file, theme, options, ...
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Context {
     pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
-    pub event_instances: Vec<EventInstance>,
+    pub config: Config,
+    pub begin: chrono::NaiveDate,
+    pub end: chrono::NaiveDate,
     pub columns: usize,
-    pub dates_per_month: Vec<Vec<MyDate>>,
+    pub theme: Theme,
 }
 
 impl Context {
@@ -85,22 +82,15 @@ impl Context {
             end = usersetdate.last_day_of_year();
         }
 
-        let mut event_instances = vec![];
-        for icalstyle in &config.ical {
-            for event in Events::read_from_ics_file(&icalstyle.file) {
-                event_instances.append(&mut event.instances(&begin, &end, &icalstyle.style));
-            }
-        }
-        event_instances.sort_by(|a, b| a.date.cmp(&b.date));
-
-        let dates_per_month = generate_dates_from_to(begin, end, usersetdate, &opts, &theme, &event_instances);
 
         Ok(Context {
             usersetdate,
             opts,
-            event_instances,
+            config,
+            begin,
+            end,
             columns,
-            dates_per_month,
+            theme,
         })
     }
 }
@@ -110,21 +100,11 @@ impl Default for Context {
         Context {
             usersetdate: NaiveDate::default(),
             opts: Cli::parse(),
-            event_instances: vec![],
+            config: Config::default(),
+            begin: NaiveDate::default(),
+            end: NaiveDate::default(),
             columns: 1,
-            dates_per_month: vec![],
-        }
-    }
-}
-
-impl Object for Context {
-    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
-        match field.as_str()? {
-            "cli" => Some(Value::from_serialize(&self.opts)),
-            "columns" => Some(Value::from(self.columns)),
-            "event_instances" => Some(Value::from_serialize(&self.event_instances)),
-            "dates_per_month" => Some(Value::from_serialize(&self.dates_per_month)),
-            _ => None,
+            theme: Theme::default(),
         }
     }
 }

@@ -3,10 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::config::DateProperty;
-use crate::config::Style as MyStyle;
 use crate::config::StyleName;
-use crate::config::Theme;
-use crate::cli::Cli;
 use crate::events::EventInstance;
 use crate::utils::DateExtensions;
 use anstyle::Ansi256Color;
@@ -15,55 +12,6 @@ use anstyle::RgbColor;
 use anstyle::Style;
 use chrono::Datelike;
 use chrono::Duration;
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct MyDate {
-    pub date: chrono::NaiveDate,
-    pub style: String,
-}
-
-impl MyDate {
-    pub fn new(
-        date: chrono::NaiveDate,
-        month: chrono::NaiveDate,
-        maindate: chrono::NaiveDate,
-        theme: &Theme,
-        eventinstances: &Vec<EventInstance>,
-    ) -> MyDate {
-        let mut matching_styles: Vec<MyStyle> = theme
-            .date
-            .iter()
-            .filter(|datestyle| {
-                satisfy_all(
-                    date,
-                    month.first_day_of_month(),
-                    maindate,
-                    &eventinstances,
-                    &datestyle.properties,
-                )
-            })
-            .cloned()
-            .map(|datestyle| datestyle.style)
-            .collect();
-
-        for eventinstance in eventinstances {
-            if eventinstance.date == date {
-                matching_styles.push(eventinstance.style.clone());
-            }
-        }
-
-        matching_styles.sort_by(|a, b| a.weight.cmp(&b.weight));
-        let mut stylenames = vec![];
-        for mut style in matching_styles {
-            stylenames.append(&mut style.stylenames);
-        }
-
-        let style = tostyle(stylenames).render().to_string();
-
-        MyDate { date, style }
-    }
-}
 
 pub fn satisfy_all(
     date: chrono::NaiveDate,
@@ -137,28 +85,25 @@ pub fn tostyle(styles: Vec<StyleName>) -> Style {
 pub fn generate_dates_from_to(
     begin: chrono::NaiveDate,
     end: chrono::NaiveDate,
-    maindate: chrono::NaiveDate,
-    opts: &Cli,
-    theme: &Theme,
-    eventinstances: &Vec<EventInstance>,
-) -> Vec<Vec<MyDate>> {
-    let mut dates: Vec<Vec<MyDate>> = vec![];
+    start_on_sunday: bool,
+) -> Vec<Vec<chrono::NaiveDate>> {
+    let mut dates: Vec<Vec<chrono::NaiveDate>> = vec![];
     let mut months = vec![begin.first_day_of_month()];
     while months.last().unwrap().first_day_of_next_month() <= end {
         months.push(months.last().unwrap().first_day_of_next_month());
     }
 
     for month in months {
-        let mut month_v: Vec<MyDate> = vec![];
+        let mut month_v: Vec<chrono::NaiveDate> = vec![];
         let mut date = month
             .first_day_of_month()
-            .first_day_of_week_before_first_day_of_month(opts.sunday);
+            .first_day_of_week_before_first_day_of_month(start_on_sunday);
         while date
             <= month
                 .last_day_of_month()
-                .last_day_of_week_after_last_day_of_month(opts.sunday)
+                .last_day_of_week_after_last_day_of_month(start_on_sunday)
         {
-            month_v.push(MyDate::new(date, month, maindate, theme, eventinstances));
+            month_v.push(date);
             date += Duration::days(1);
         }
         dates.push(month_v)

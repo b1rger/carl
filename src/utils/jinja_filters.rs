@@ -1,18 +1,17 @@
-use crate::utils::helpers::MyDate;
 use minijinja::value::{ViaDeserialize,Value};
 
-pub fn dates_to_columns(dates: ViaDeserialize<Vec<Vec<MyDate>>>, columns: usize) -> Value {
-    let mut months_columns: Vec<Vec<Vec<MyDate>>> = vec![];
+pub fn dates_to_columns(dates: ViaDeserialize<Vec<Vec<chrono::NaiveDate>>>, columns: usize) -> Value {
+    let mut months_columns: Vec<Vec<Vec<chrono::NaiveDate>>> = vec![];
     for chunk in dates.chunks(columns) {
         months_columns.push(chunk.to_vec());
     }
-    let mut ret: Vec<Vec<Vec<Option<MyDate>>>> = vec![];
+    let mut ret: Vec<Vec<Vec<Option<chrono::NaiveDate>>>> = vec![];
     for mut row in months_columns {
-        let mut monthlines: Vec<Vec<Option<MyDate>>> = vec![];
+        let mut monthlines: Vec<Vec<Option<chrono::NaiveDate>>> = vec![];
         while row.iter().any(|x| !x.is_empty()) {
-            let mut line: Vec<Option<MyDate>> = vec![];
+            let mut line: Vec<Option<chrono::NaiveDate>> = vec![];
             for month in &mut row {
-                let mut foo: Vec<Option<MyDate>> = if month.len() >= 7 {
+                let mut foo: Vec<Option<chrono::NaiveDate>> = if month.len() >= 7 {
                     month.drain(..7).map(|x| Some(x)).collect()
                 } else {
                     vec![None; 7]
