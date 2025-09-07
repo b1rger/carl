@@ -50,7 +50,6 @@ fn main() {
         .build()
         .unwrap()
     );
-    minijinja_embed::load_templates!(&mut env);
     let mut default_template: String = "carl.tmpl".to_string();
 
     if let Some(template_file) = ctx.config.template {
@@ -65,6 +64,8 @@ fn main() {
                 }
             }
         }
+    } else {
+        minijinja_embed::load_templates!(&mut env);
     }
 
     env.add_filter("days_in_year_left", filters::days_in_year_left);
