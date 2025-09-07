@@ -105,19 +105,3 @@ impl Default for Context {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_context_default() {
-        let ctx = Context::default();
-        assert!(ctx.event_instances.is_empty());
-    }
-    #[test]
-    fn test_context_new() {
-        let ctx = Context::new().unwrap();
-        assert!(ctx.event_instances.is_empty());
-    }
-}

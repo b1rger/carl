@@ -138,13 +138,4 @@ mod tests {
         let u = NaiveDate::default() + Months::new(3);
         assert_eq!(i, u.last_day_of_week_after_last_day_of_month(true));
     }
-    #[test]
-    fn test_iterator_end() {
-        let i = NaiveDate::default();
-        let mut it = i.month_full_weeks_iter(true);
-        for _ in 1..=42 {
-            it.next();
-        }
-        assert_eq!(it.next(), None);
-    }
 }

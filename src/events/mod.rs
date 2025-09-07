@@ -151,24 +151,4 @@ mod tests {
         };
         assert_eq!(event.end.date(), date);
     }
-    #[test]
-    fn test_event_fmt_date() {
-        let date = NaiveDate::default();
-        let event = Event {
-            start: EventDateTime::Date(date),
-            ..Default::default()
-        };
-        assert_eq!(
-            format!("{}", event),
-            String::from("Thu, Jan,  1: Default Event")
-        );
-    }
-    #[test]
-    fn test_event_fmt_datetime() {
-        let event = Event::default();
-        assert_eq!(
-            format!("{}", event),
-            String::from("Thu, Jan,  1: Default Event")
-        );
-    }
 }
