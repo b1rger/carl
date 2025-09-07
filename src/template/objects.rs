@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+//
+// SPDX-License-Identifier: MIT
 use std::sync::Arc;
 use crate::events::EventInstance;
 use minijinja::value::{Object, Value, from_args};

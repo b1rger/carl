@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+//
+// SPDX-License-Identifier: MIT
 use chrono::Datelike;
 use chrono::NaiveDate;
 use minijinja::{Error, ErrorKind};
