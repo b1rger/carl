@@ -2,7 +2,7 @@ use minijinja::value::ViaDeserialize;
 use minijinja::value::Value;
 
 pub fn reset_style() -> String {
-    format!("{}", "\x1B[0m")
+    "\x1B[0m".to_string()
 }
 
 pub(crate) fn dates_to_columns(dates: ViaDeserialize<Vec<Vec<chrono::NaiveDate>>>, columns: usize) -> Result<Value, minijinja::Error> {
@@ -16,12 +16,12 @@ pub(crate) fn dates_to_columns(dates: ViaDeserialize<Vec<Vec<chrono::NaiveDate>>
         while row.iter().any(|x| !x.is_empty()) {
             let mut line: Vec<Option<chrono::NaiveDate>> = vec![];
             for month in &mut row {
-                let mut foo: Vec<Option<chrono::NaiveDate>> = if month.len() >= 7 {
-                    month.drain(..7).map(|x| Some(x)).collect()
+                let mut week: Vec<Option<chrono::NaiveDate>> = if month.len() >= 7 {
+                    month.drain(..7).map(Some).collect()
                 } else {
                     vec![None; 7]
                 };
-                line.append(&mut foo);
+                line.append(&mut week);
             }
             monthlines.push(line);
         }

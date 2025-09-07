@@ -25,14 +25,13 @@ use minijinja::syntax::SyntaxConfig;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
-    let ctx: Context;
-    match Context::new() {
-        Ok(x) => ctx = x,
+    let ctx: Context = match Context::new() {
+        Ok(x) => x,
         Err(x) => {
             eprintln!("{}", x);
             process::exit(1);
         }
-    }
+    };
 
     let mut event_instances = vec![];
     for icalstyle in &ctx.config.ical {
@@ -74,7 +73,7 @@ fn main() {
     env.add_function("reset_style", functions::reset_style);
     minijinja_contrib::add_to_environment(&mut env);
 
-    let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate.clone(), ctx.theme.clone());
+    let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.theme.clone());
     let template_context = context! { 
         cli => ctx.opts,
         columns => ctx.columns,
