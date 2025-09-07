@@ -4,6 +4,5 @@
 
 mod date_extensions;
 pub mod helpers;
-pub mod jinja_functions;
 
 pub use date_extensions::DateExtensions;
