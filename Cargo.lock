@@ -103,6 +103,7 @@ dependencies = [
  "icalendar",
  "minijinja",
  "minijinja-contrib",
+ "minijinja-embed",
  "rrule",
  "serde",
  "toml",
@@ -453,6 +454,12 @@ dependencies = [
  "serde",
  "time",
 ]
+
+[[package]]
+name = "minijinja-embed"
+version = "2.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1437c67e5470a94aae60bb715c92581e479476e1bbb45a7d467063ead7f543ad"
 
 [[package]]
 name = "minimal-lexical"

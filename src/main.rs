@@ -14,6 +14,7 @@ extern crate serde;
 extern crate toml;
 extern crate xdg;
 use std::process;
+use std::path::Path;
 
 use crate::utils::helpers::generate_dates_from_to;
 use crate::template::{objects, functions, filters};
@@ -50,7 +51,22 @@ fn main() {
         .build()
         .unwrap()
     );
-    env.set_loader(path_loader("templates"));
+    minijinja_embed::load_templates!(&mut env);
+    let mut default_template: String = "carl.tmpl".to_string();
+
+    if let Some(template_file) = ctx.config.template {
+        let path = Path::new(&template_file);
+        if path.is_file() {
+            if let Some(parent) = path.parent() {
+                if let Some(filename) = path.file_name() {
+                    if let Some(filename) = filename.to_str() {
+                        env.set_loader(path_loader(parent));
+                        default_template = filename.to_string();
+                    }
+                }
+            }
+        }
+    }
 
     env.add_filter("days_in_year_left", filters::days_in_year_left);
     env.add_filter("percentage_of_year", filters::percentage_of_year);
@@ -68,7 +84,7 @@ fn main() {
         style_date => minijinja::Value::from_object(date_styler),
     };
 
-    let tmpl = env.get_template("carl.tmpl").unwrap();
+    let tmpl = env.get_template(default_template.as_str()).unwrap();
 
     print!("{}", tmpl.render(template_context).unwrap());
 }
