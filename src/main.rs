@@ -17,7 +17,7 @@ use std::process;
 
 use crate::utils::jinja_functions::reset_style;
 use crate::utils::helpers::generate_dates_from_to;
-use crate::template::{DateStyler,DateToColumnsGenerator};
+use crate::template::{DateStyler,DateToColumnsGenerator,filters};
 use crate::events::{Events, ReadFromIcsFile};
 use context::Context;
 use minijinja::{path_loader, Environment, context};
@@ -52,6 +52,8 @@ fn main() {
         .unwrap()
     );
     env.set_loader(path_loader("templates"));
+    env.add_filter("days_in_year_left", filters::days_in_year_left);
+    env.add_filter("percentage_of_year", filters::percentage_of_year);
     minijinja_contrib::add_to_environment(&mut env);
 
     let date_styler = DateStyler::new(event_instances.clone(), ctx.usersetdate.clone(), ctx.theme.clone());
@@ -61,6 +63,7 @@ fn main() {
         dates_per_month => dates_per_month,
         dates_to_columns => minijinja::Value::from_object(DateToColumnsGenerator::new()),
         event_instances => event_instances,
+        main_date => ctx.usersetdate,
         style_date => minijinja::Value::from_object(date_styler),
         reset_style => minijinja::Value::from_function(reset_style),
     };

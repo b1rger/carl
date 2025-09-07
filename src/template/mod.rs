@@ -8,6 +8,8 @@ use crate::utils::DateExtensions;
 use chrono::NaiveDate;
 use crate::config::Style as MyStyle;
 
+pub mod filters;
+
 
 #[derive(Debug)]
 pub(crate) struct DateStyler {
