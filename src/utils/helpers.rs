@@ -47,10 +47,6 @@ pub fn tostyle(styles: Vec<StyleName>) -> Style {
     style
 }
 
-pub fn convertstyle(styles: Vec<StyleName>, s: &str) -> String {
-    let style = tostyle(styles);
-    format!("{}{}{}", style.render(), s, style.render_reset())
-}
 
 #[cfg(test)]
 mod tests {

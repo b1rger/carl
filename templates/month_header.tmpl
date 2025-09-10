@@ -1,0 +1,14 @@
+## SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+## SPDX-License-Identifier: MIT
+##
+## month_header.tmpl
+## display the name of the month, centered
+{%- set width = 21 -%}
+{%- if cli.julian %}{%- set width = 28 -%}{%- endif -%}
+{%- set monthname = month|dateformat(format="[month repr:long] [year]") -%}
+{%- set monthname_length = monthname|length -%}
+{%- set indent = (width - monthname_length) / 2 -%}
+{%- set prefix = indent|int -%}
+{%- set suffix = prefix -%}
+{%- if (width - monthname_length) % 2 == 1 -%}{%- set suffix = suffix + 1 -%}{%- endif -%}
+{%- for num in range(0, prefix) %} {% endfor -%}{{ monthname }}{%- for num in range(0, suffix) %} {% endfor %} 

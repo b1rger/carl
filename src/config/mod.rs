@@ -11,12 +11,14 @@ extern crate xdg;
 use clap::crate_name;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::path::PathBuf;
 
 #[derive(Deserialize, Serialize, Debug, Default)]
 #[serde(default)]
 pub struct Config {
     pub theme: Option<String>,
     pub ical: Vec<IcalStyle>,
+    pub template_dir: Option<String>,
 }
 
 impl Config {
@@ -38,6 +40,17 @@ impl Config {
             Err(e) => eprintln!("Cannot determine XDG base directories: {}", e),
         }
         Config::default()
+    }
+
+    pub fn template(self) -> Option<PathBuf> {
+        let template_file = self.template_dir?;
+        let path = PathBuf::from(&template_file);
+        if path.is_dir() {
+            return Some(path);
+        } else {
+            eprintln!("Template directory: {} is not a directory.", path.display());
+        }
+        None
     }
 }
 

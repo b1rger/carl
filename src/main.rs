@@ -6,7 +6,7 @@ mod cli;
 mod config;
 mod context;
 mod events;
-mod output;
+mod template;
 mod utils;
 
 extern crate clap;
@@ -17,97 +17,76 @@ use std::process;
 
 use context::Context;
 use events::{Events, ReadFromIcsFile};
-use output::agenda::Agenda;
-use output::calendar::Calendar;
-use output::date::Date;
-use output::yearprogress::Yearprogress;
+use template::{objects, functions, filters};
 use utils::DateExtensions;
+use minijinja::{path_loader, Environment, context};
+use minijinja::syntax::SyntaxConfig;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
-    let mut columns = 1;
-    let mut months: Vec<chrono::NaiveDate> = vec![];
-
-    let mut ctx: Context;
-    match Context::new() {
-        Ok(x) => ctx = x,
+    let ctx: Context = match Context::new() {
+        Ok(x) => x,
         Err(x) => {
             eprintln!("{}", x);
             process::exit(1);
         }
-    }
+    };
 
-    let mut daterangebegin: chrono::NaiveDate = ctx.usersetdate.first_day_of_month();
-    let mut daterangeend: chrono::NaiveDate = ctx.usersetdate.last_day_of_month();
-
-    if ctx.opts.three {
-        daterangebegin = ctx
-            .usersetdate
-            .first_day_of_month()
-            .pred_opt()
-            .unwrap()
-            .first_day_of_month();
-        daterangeend = ctx
-            .usersetdate
-            .first_day_of_next_month()
-            .last_day_of_month();
-        months.push(daterangebegin);
-        months.push(ctx.usersetdate);
-        months.push(daterangeend);
-        columns = 3;
-    }
-    if let Some(num) = ctx.opts.months {
-        daterangebegin = ctx.usersetdate.first_day_of_month();
-        let mut tmpdate = daterangebegin;
-        months.push(tmpdate);
-        for _ in 1..=(num - 1) {
-            tmpdate = tmpdate.first_day_of_next_month();
-            months.push(tmpdate);
-        }
-        daterangeend = tmpdate.last_day_of_month();
-        columns = 3;
-    }
-    if ctx.opts.year {
-        daterangebegin = ctx.usersetdate.first_day_of_year();
-        daterangeend = ctx.usersetdate.last_day_of_year();
-        let mut tmpdate = daterangebegin;
-        while tmpdate < daterangeend {
-            months.push(tmpdate);
-            tmpdate = tmpdate.first_day_of_next_month();
-        }
-        columns = 3;
-    }
-    if !ctx.opts.three && !ctx.opts.year && ctx.opts.months.is_none() {
-        months.push(ctx.usersetdate);
-    }
-
+    let mut event_instances = vec![];
     for icalstyle in &ctx.config.ical {
         for event in Events::read_from_ics_file(&icalstyle.file) {
-            ctx.eventinstances.append(&mut event.instances(
-                &daterangebegin,
-                &daterangeend,
-                &icalstyle.style,
-            ));
+            event_instances.append(&mut event.instances(&ctx.begin, &ctx.end, &icalstyle.style));
         }
     }
-    ctx.eventinstances.sort_by(|a, b| a.date.cmp(&b.date));
+    event_instances.sort_by(|a, b| a.date.cmp(&b.date));
+    let dates_per_month = ctx.begin.generate_dates_from_to(ctx.end, ctx.opts.sunday);
 
-    if ctx.opts.action.calendar {
-        let calendar = Calendar {
-            dates: months,
-            columns,
-            ctx: &ctx,
-        };
-        print!("{}", calendar);
+
+    let mut env = Environment::new();
+    env.set_syntax(SyntaxConfig::builder()
+        .line_statement_prefix("#")
+        .line_comment_prefix("##")
+        .build()
+        .unwrap()
+    );
+    let default_template: String = "carl.tmpl".to_string();
+    minijinja_embed::load_templates!(&mut env);
+
+    if let Some(path) = ctx.config.template() {
+        // We implement template overloading for the embedded
+        // templates by iterating through the embedded templates
+        // and checking if in the template path a template with
+        // the same filename exists. If We find such a template,
+        // we remove the embedded one from the environment.
+        let mut remove_templates: Vec<String> = vec![];
+        for (name, _) in env.templates() {
+            if path.join(name).exists() {
+                remove_templates.push(name.to_string());
+            }
+        }
+        remove_templates.iter().for_each(|name| env.remove_template(name));
+        env.set_loader(path_loader(path));
     }
 
-    if ctx.opts.action.agenda {
-        let agenda = Agenda { ctx: &ctx };
-        print!("{}", agenda);
-    }
+    env.add_filter("days_in_year_left", filters::days_in_year_left);
+    env.add_filter("percentage_of_year", filters::percentage_of_year);
+    env.add_function("dates_to_columns", functions::dates_to_columns);
+    env.add_function("reset_style", functions::reset_style);
+    env.add_function("style_event", functions::style_event);
+    minijinja_contrib::add_to_environment(&mut env);
 
-    if ctx.opts.action.yearprogress {
-        let yp = Yearprogress { ctx: &ctx };
-        print!("{}", yp);
+    let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.theme.clone(), ctx.styletype);
+    let template_context = context! { 
+        cli => ctx.opts,
+        columns => ctx.columns,
+        dates_per_month => dates_per_month,
+        event_instances => event_instances,
+        main_date => ctx.usersetdate,
+        style_date => minijinja::Value::from_object(date_styler),
+    };
+
+    match env.get_template(default_template.as_str()).and_then(|x| x.render(template_context)) {
+        Ok(x) => { print!("{}", x); }
+        Err(x) => { eprintln!("{}", x); }
     }
 }

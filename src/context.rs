@@ -5,18 +5,22 @@
 use crate::cli::{Action, Cli};
 use crate::config::StyleType;
 use crate::config::{Config, Theme};
-use crate::events::EventInstances;
+use crate::utils::DateExtensions;
 use chrono::prelude::*;
 use clap::Parser;
+use serde::Deserialize;
 
 // A struct storing the combined settings of config file, theme, options, ...
+#[derive(Deserialize, Debug)]
 pub struct Context {
     pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
     pub config: Config,
     pub theme: Theme,
     pub styletype: StyleType,
-    pub eventinstances: EventInstances,
+    pub begin: chrono::NaiveDate,
+    pub end: chrono::NaiveDate,
+    pub columns: usize,
 }
 
 impl Context {
@@ -41,13 +45,47 @@ impl Context {
             opts.action.calendar = true;
         }
 
+        let mut columns = 1;
+        if opts.three || opts.year || opts.months.is_some() {
+            columns = 3;
+        }
+
+        let mut begin = usersetdate.first_day_of_month();
+        let mut end = usersetdate.last_day_of_month();
+
+        if opts.three {
+            begin = usersetdate
+                .first_day_of_month()
+                .pred_opt()
+                .unwrap()
+                .first_day_of_month();
+            end = usersetdate.first_day_of_next_month().last_day_of_month();
+        }
+
+        if let Some(num) = opts.months {
+            begin = usersetdate.first_day_of_month();
+            let mut tmpdate = begin;
+            for _ in 1..=(num - 1) {
+                tmpdate = tmpdate.first_day_of_next_month();
+            }
+            end = tmpdate.last_day_of_month();
+        }
+
+        if opts.year {
+            begin = usersetdate.first_day_of_year();
+            end = usersetdate.last_day_of_year();
+        }
+
+
         Ok(Context {
             usersetdate,
             opts,
             config,
             theme,
             styletype,
-            eventinstances: vec![],
+            begin,
+            end,
+            columns,
         })
     }
 }
@@ -60,23 +98,9 @@ impl Default for Context {
             config: Config::default(),
             theme: Theme::default(),
             styletype: StyleType::Light,
-            eventinstances: vec![],
+            begin: NaiveDate::default(),
+            end: NaiveDate::default(),
+            columns: 1,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_context_default() {
-        let ctx = Context::default();
-        assert!(ctx.eventinstances.is_empty());
-    }
-    #[test]
-    fn test_context_new() {
-        let ctx = Context::new().unwrap();
-        assert!(ctx.eventinstances.is_empty());
     }
 }
