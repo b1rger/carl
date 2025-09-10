@@ -1,0 +1,15 @@
+name: Run e2e tests
+on: pull_request
+
+jobs:
+  e2etests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install faketime
+        run: sudo apt-get update && sudo apt-get -y install faketime
+      - name: Print env
+        run: env
+      - name: E2E tests
+        run:
+          ./tests/test.sh
