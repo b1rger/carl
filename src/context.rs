@@ -35,10 +35,7 @@ impl Context {
             StyleType::Light
         };
 
-        let usersetdate: chrono::NaiveDate = match opts.validate_date() {
-            Ok(x) => x,
-            Err(x) => return Err(x),
-        };
+        let usersetdate: chrono::NaiveDate = opts.validate_date()?;
 
         if opts.action == Action::default() {
             opts.action.calendar = true;
