@@ -6,17 +6,16 @@ mod ics;
 pub use ics::ReadFromIcsFile;
 
 use crate::config::Style;
-use crate::utils::convertstyle;
 use chrono::prelude::*;
 use chrono::Duration;
 use rrule::{RRuleSet, Tz};
-use std::fmt;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum EventDateTime {
     DateTime {
         date_time: chrono::NaiveDateTime,
-        offset: Option<chrono::offset::FixedOffset>,
+        offset: Option<i32>,
     },
     Date(chrono::NaiveDate),
 }
@@ -30,23 +29,16 @@ impl EventDateTime {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventInstance {
     pub date: chrono::NaiveDate,
     pub event: Event,
     pub style: Style,
 }
 
-impl fmt::Display for EventInstance {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let style = convertstyle(self.style.stylenames.to_vec(), "·");
-        write!(f, "{} {}: {}", style, self.date, self.event.summary)
-    }
-}
-
 pub type EventInstances = Vec<EventInstance>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Event {
     pub start: EventDateTime,
     pub end: EventDateTime,
@@ -124,27 +116,6 @@ impl Default for Event {
     }
 }
 
-impl fmt::Display for Event {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let startformatstring = match self.start {
-            EventDateTime::DateTime { date_time, offset } => {
-                if let Some(x) = offset {
-                    format!("{} ({})", date_time.format("%a, %b, %e (%H:%M)"), x)
-                } else {
-                    date_time.format("%a, %b, %e (%H:%M)").to_string()
-                }
-            }
-            EventDateTime::Date(x) => x.format("%a, %b, %e").to_string(),
-        };
-        write!(
-            f,
-            "{}: {}",
-            startformatstring,
-            self.summary.replace('\\', "")
-        )
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -174,25 +145,5 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(event.end.date(), date);
-    }
-    #[test]
-    fn test_event_fmt_date() {
-        let date = NaiveDate::default();
-        let event = Event {
-            start: EventDateTime::Date(date),
-            ..Default::default()
-        };
-        assert_eq!(
-            format!("{}", event),
-            String::from("Thu, Jan,  1: Default Event")
-        );
-    }
-    #[test]
-    fn test_event_fmt_datetime() {
-        let event = Event::default();
-        assert_eq!(
-            format!("{}", event),
-            String::from("Thu, Jan,  1: Default Event")
-        );
     }
 }

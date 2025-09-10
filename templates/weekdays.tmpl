@@ -1,0 +1,11 @@
+## SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+## SPDX-License-Identifier: MIT
+##
+## weekdays.tmpl
+## display the abbrevations of the first seven days
+## if we display the dates using julian format, add
+## an additional space (because julian date is 3 char wide)
+{%- for date in first_seven_dates -%}
+{%- set date = date | dateformat(format="[weekday]") -%}
+{%- if cli.julian -%}{{ date[0:3] }} {% else %}{{ date[0:2] }} {% endif %}
+{%- endfor -%}

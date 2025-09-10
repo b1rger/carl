@@ -1,0 +1,5 @@
+## SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+## SPDX-License-Identifier: MIT
+##
+## calendar_day.tmpl
+{%- if day -%}{{ style_date(day, month) }}{% if cli.julian %}{{ day|dateformat(format="[ordinal]") }}{% else %}{{ day|dateformat(format="[day padding:space]") }}{% endif %}{{ reset_style() }}{%- else %}  {% endif -%}
