@@ -5,7 +5,7 @@
 {%- set year = main_date | dateformat(format="[year]") -%}
 {%- set percentage = "" ~ main_date | percentage_of_year -%}
 {%- set days_left = main_date | days_in_year_left -%}
-[1mYearprogress ({{ year }}):{{ reset_style() }}
+{{ style(['Bold']) }}Yearprogress ({{ year }}):{{ reset_style() }}
 {{ percentage[:6] }}% of {{ year }}
 Day number {{ main_date | dateformat(format="[ordinal]") }}, {{ days_left }} left
 
