@@ -5,6 +5,7 @@ use minijinja::value::ViaDeserialize;
 use minijinja::value::Value;
 use crate::events::EventInstance;
 use crate::utils::tostyle;
+use crate::config::StyleName;
 
 pub(crate) fn reset_style() -> String {
     "\x1B[0m".to_string()
@@ -37,4 +38,8 @@ pub(crate) fn dates_to_columns(dates: ViaDeserialize<Vec<Vec<chrono::NaiveDate>>
 
 pub(crate) fn style_event(event: ViaDeserialize<EventInstance>) -> String {
     tostyle(event.style.stylenames.clone()).render().to_string()
+}
+
+pub(crate) fn style(styles: ViaDeserialize<Vec<StyleName>>) -> String {
+    tostyle(styles.to_vec()).render().to_string()
 }

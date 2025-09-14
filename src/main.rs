@@ -73,6 +73,7 @@ fn main() {
     env.add_function("dates_to_columns", functions::dates_to_columns);
     env.add_function("reset_style", functions::reset_style);
     env.add_function("style_event", functions::style_event);
+    env.add_function("style", functions::style);
     minijinja_contrib::add_to_environment(&mut env);
 
     let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.theme.clone(), ctx.styletype);
