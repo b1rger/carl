@@ -1,7 +1,7 @@
 ## SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
 ## SPDX-License-Identifier: MIT
 {% if cli.action.agenda -%}
-[1mAgenda:{{ reset_style() }}
+{{style(['Bold'])}}Agenda:{{ reset_style() }}
 {% for event in event_instances -%}
 {{ style_date(event.date) }}·{{ reset_style() }} {{ event.date|dateformat(format="short") }}: {{ event.event.summary }}{{ reset_style() }}
 {% endfor -%}
