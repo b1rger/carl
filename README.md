@@ -126,6 +126,14 @@ theme = "default"
 ```
 The themefile is read from `XDG_CONFIG_DIRS/carl/<themename>.toml` or `XDG_CONFIG_HOME/.carl/<themename>.toml` (the latter has precedence).
 
+### Templates
+
+The output of `carl` is rendered using Jinja templates. It is possible to use custom template files and adapt the calendar layout.
+The location of custom templates is configured using the `template_dir` setting of the configuration.
+The default templates [can be found in the source repository](templates). It is either possible to override them individually or simply
+override the main template, which has to be called `carl.tmpl`, and include custom templates there.
+
+
 ### Styles
 
 Themefiles and Icalfile listings can contain custom style settings. A style changes how a specific date in the calendar is displayed.
