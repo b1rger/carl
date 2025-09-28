@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 [package]
 name = "carl"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["Birger Schacht <birger@rantanplan.org>"]
 edition = "2021"
 license = "MIT"
