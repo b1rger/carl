@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/b1rger/carl/compare/v0.3.1...v0.4.0) (2025-09-28)
+
+
+### Features
+
+* add a simple `style` template method ([8219932](https://github.com/b1rger/carl/commit/82199320fa451d23465a2191da6a4ddfc1f74d31))
+* implement -n, --months &lt;num&gt; ([0bf5887](https://github.com/b1rger/carl/commit/0bf58875e68b7aa19a3cc74442ed1ebc26fca71a))
+* **templates:** use `style` template method instead of terminal seq ([643f138](https://github.com/b1rger/carl/commit/643f13801f76f292a36b8e3bcc42d103e9140669))
+* use jinja templates to render output of carl ([c175ec3](https://github.com/b1rger/carl/commit/c175ec33beb66372f15231c4921f136bf9b1976c))
+
+
+### Bug Fixes
+
+* don't print more weekdays headers than we have months in the chunk ([ad60895](https://github.com/b1rger/carl/commit/ad608951c4ebe2181af8f1aaecaff2526f6cebc7))
+
 ## [0.3.1](https://github.com/b1rger/carl/compare/v0.3.0...v0.3.1) (2024-08-31)
 
 

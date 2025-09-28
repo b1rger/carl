@@ -95,7 +95,7 @@ checksum = "3c6ed94e98ecff0c12dd1b04c15ec0d7d9458ca8fe806cea6f12954efe74c63b"
 
 [[package]]
 name = "carl"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anstyle",
  "chrono",
