@@ -84,10 +84,11 @@ pub enum StyleName {
 pub enum DateProperty {
     FirstDayOfMonth,
     BeforeFirstDayOfMonth,
-    BeforeCurrentDate,
-    CurrentDate,
-    AfterCurrentDate,
+    BeforeUserDate,
+    UserDate,
+    AfterUserDate,
     AfterLastDayOfMonth,
+    SameDayOfMonthAsUserDate,
     LastDayOfMonth,
     IsEvent,
     Monday,
@@ -99,6 +100,9 @@ pub enum DateProperty {
     Sunday,
     Odd,
     Even,
+    BeforeToday,
+    Today,
+    AfterToday,
 }
 
 #[cfg(test)]

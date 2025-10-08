@@ -112,12 +112,14 @@ impl DateExtensions for chrono::NaiveDate {
         dates
     }
     fn satisfy_all(&self, firstdayofmonth: chrono::NaiveDate, maindate: chrono::NaiveDate, events: &[EventInstance], properties: &[DateProperty]) -> bool {
+        let today: chrono::NaiveDate = Local::now().date_naive();
         properties.iter().all(|prop| match prop {
             DateProperty::FirstDayOfMonth => *self == firstdayofmonth,
             DateProperty::BeforeFirstDayOfMonth => *self < firstdayofmonth,
-            DateProperty::BeforeCurrentDate => *self < maindate,
-            DateProperty::CurrentDate => *self == maindate,
-            DateProperty::AfterCurrentDate => *self > maindate,
+            DateProperty::BeforeUserDate => *self < maindate,
+            DateProperty::UserDate => *self == maindate,
+            DateProperty::AfterUserDate => *self > maindate,
+            DateProperty::SameDayOfMonthAsUserDate => self.day() == maindate.day(),
             DateProperty::AfterLastDayOfMonth => *self > firstdayofmonth.last_day_of_month(),
             DateProperty::LastDayOfMonth => *self == firstdayofmonth.last_day_of_month(),
             DateProperty::IsEvent => events
@@ -132,6 +134,9 @@ impl DateExtensions for chrono::NaiveDate {
             DateProperty::Sunday => self.weekday() == chrono::Weekday::Sun,
             DateProperty::Odd => self.day() % 2 == 1,
             DateProperty::Even => self.day() % 2 == 0,
+            DateProperty::BeforeToday => *self < today,
+            DateProperty::Today => *self == today,
+            DateProperty::AfterToday => *self > today,
         })
     }
 }

@@ -55,14 +55,28 @@ impl Default for Theme {
 fn default_datestyle_vector() -> Vec<DateStyle> {
     vec![
         DateStyle {
-            properties: vec![CurrentDate],
+            properties: vec![UserDate],
             style: Style {
                 stylenames: vec![Bold, Underline],
                 ..Default::default()
             },
         },
         DateStyle {
-            properties: vec![BeforeCurrentDate],
+            properties: vec![BeforeUserDate],
+            style: Style {
+                stylenames: vec![Dimmed],
+                ..Default::default()
+            },
+        },
+        DateStyle {
+            properties: vec![Today],
+            style: Style {
+                stylenames: vec![Bold, Underline],
+                ..Default::default()
+            },
+        },
+        DateStyle {
+            properties: vec![BeforeToday],
             style: Style {
                 stylenames: vec![Dimmed],
                 ..Default::default()
