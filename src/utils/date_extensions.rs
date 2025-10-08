@@ -130,8 +130,8 @@ impl DateExtensions for chrono::NaiveDate {
             DateProperty::Friday => self.weekday() == chrono::Weekday::Fri,
             DateProperty::Saturday => self.weekday() == chrono::Weekday::Sat,
             DateProperty::Sunday => self.weekday() == chrono::Weekday::Sun,
-            DateProperty::Odd => self.day() % 2 == 1,
-            DateProperty::Even => self.day() % 2 == 0,
+            DateProperty::Odd => !self.day().is_multiple_of(2),
+            DateProperty::Even => self.day().is_multiple_of(2),
         })
     }
 }
