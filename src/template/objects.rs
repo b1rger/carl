@@ -13,14 +13,14 @@ use minijinja::value::{Object, Value, from_args};
 #[derive(Debug)]
 pub(crate) struct DateStyler {
     event_instances: Vec<EventInstance>,
-    main_date: chrono::NaiveDate,
+    usersetdate: Option<chrono::NaiveDate>,
     theme: Theme,
     styletype: StyleType,
 }
 
 impl DateStyler {
-    pub(crate) fn new(event_instances: Vec<EventInstance>, main_date: chrono::NaiveDate, theme: Theme, styletype: StyleType) -> Self {
-        Self { event_instances, main_date, theme, styletype }
+    pub(crate) fn new(event_instances: Vec<EventInstance>, usersetdate: Option<chrono::NaiveDate>, theme: Theme, styletype: StyleType) -> Self {
+        Self { event_instances, usersetdate, theme, styletype }
     }
 }
 
@@ -35,7 +35,7 @@ impl Object for DateStyler {
                 .filter(|datestyle| {
                     pdate.satisfy_all(
                         month.first_day_of_month(),
-                        self.main_date,
+                        self.usersetdate,
                         &self.event_instances,
                         &datestyle.properties,
                     )
