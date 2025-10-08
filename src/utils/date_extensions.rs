@@ -18,7 +18,7 @@ pub trait DateExtensions {
     fn last_day_of_week_after_last_day_of_month(&self, from_sunday: bool) -> chrono::NaiveDate;
     fn month_full_week(&self, from_sunday: bool) -> Vec<chrono::NaiveDate>;
     fn generate_dates_from_to(&self, end: chrono::NaiveDate, from_sunday: bool) -> Vec<Vec<chrono::NaiveDate>>;
-    fn satisfy_all(&self, firstdayofmonth: chrono::NaiveDate, maindate: chrono::NaiveDate, events: &[EventInstance], properties: &[DateProperty]) -> bool;
+    fn satisfy_all(&self, firstdayofmonth: chrono::NaiveDate, usersetdate: Option<chrono::NaiveDate>, events: &[EventInstance], properties: &[DateProperty]) -> bool;
 }
 
 impl DateExtensions for chrono::NaiveDate {
@@ -111,13 +111,27 @@ impl DateExtensions for chrono::NaiveDate {
         }
         dates
     }
-    fn satisfy_all(&self, firstdayofmonth: chrono::NaiveDate, maindate: chrono::NaiveDate, events: &[EventInstance], properties: &[DateProperty]) -> bool {
+    fn satisfy_all(&self, firstdayofmonth: chrono::NaiveDate, usersetdate: Option<chrono::NaiveDate>, events: &[EventInstance], properties: &[DateProperty]) -> bool {
+        let today: chrono::NaiveDate = Local::now().date_naive();
         properties.iter().all(|prop| match prop {
             DateProperty::FirstDayOfMonth => *self == firstdayofmonth,
             DateProperty::BeforeFirstDayOfMonth => *self < firstdayofmonth,
-            DateProperty::BeforeCurrentDate => *self < maindate,
-            DateProperty::CurrentDate => *self == maindate,
-            DateProperty::AfterCurrentDate => *self > maindate,
+            DateProperty::BeforeUserDate => match usersetdate {
+                Some(x) => *self < x,
+                None => false
+            },
+            DateProperty::UserDate => match usersetdate {
+                Some(x) => *self == x,
+                None => false,
+            },
+            DateProperty::AfterUserDate => match usersetdate {
+                Some(x) => *self > x,
+                None => false,
+            },
+            DateProperty::SameDayOfMonthAsUserDate => match usersetdate {
+                Some(x) => self.day() == x.day(),
+                None => false,
+            },
             DateProperty::AfterLastDayOfMonth => *self > firstdayofmonth.last_day_of_month(),
             DateProperty::LastDayOfMonth => *self == firstdayofmonth.last_day_of_month(),
             DateProperty::IsEvent => events
@@ -132,6 +146,9 @@ impl DateExtensions for chrono::NaiveDate {
             DateProperty::Sunday => self.weekday() == chrono::Weekday::Sun,
             DateProperty::Odd => self.day() % 2 == 1,
             DateProperty::Even => self.day() % 2 == 0,
+            DateProperty::BeforeToday => *self < today,
+            DateProperty::Today => *self == today,
+            DateProperty::AfterToday => *self > today,
         })
     }
 }
