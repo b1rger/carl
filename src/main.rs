@@ -76,7 +76,7 @@ fn main() {
     env.add_function("style", functions::style);
     minijinja_contrib::add_to_environment(&mut env);
 
-    let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.theme.clone(), ctx.styletype);
+    let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.specified_date, ctx.theme.clone(), ctx.styletype);
     let template_context = context! { 
         cli => ctx.opts,
         columns => ctx.columns,
