@@ -13,6 +13,7 @@ use serde::Deserialize;
 // A struct storing the combined settings of config file, theme, options, ...
 #[derive(Deserialize, Debug)]
 pub struct Context {
+    pub specified_date: Option<chrono::NaiveDate>,
     pub usersetdate: chrono::NaiveDate,
     pub opts: Cli,
     pub config: Config,
@@ -40,6 +41,7 @@ impl Context {
         };
 
         let usersetdate: chrono::NaiveDate = opts.validate_date()?;
+        let specified_date = if opts.date.len() == 3 { Some(usersetdate) } else { None };
 
         if opts.action == Action::default() {
             opts.action.calendar = true;
@@ -78,6 +80,7 @@ impl Context {
 
 
         Ok(Context {
+            specified_date,
             usersetdate,
             opts,
             config,
@@ -93,6 +96,7 @@ impl Context {
 impl Default for Context {
     fn default() -> Self {
         Context {
+            specified_date: None,
             usersetdate: NaiveDate::default(),
             opts: Cli::parse(),
             config: Config::default(),
