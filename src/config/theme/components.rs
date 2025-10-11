@@ -99,6 +99,9 @@ pub enum DateProperty {
     Sunday,
     Odd,
     Even,
+    BeforeToday,
+    Today,
+    AfterToday,
 }
 
 #[cfg(test)]
