@@ -169,7 +169,7 @@ styletype = 'Light'
 - `FirstDayOfMonth`
 - `BeforeFirstDayOfMonth`
 - `BeforeCurrentDate`
-- `CurrentDate`
+- `CurrentDate` (deprecated: the current day of the month for every month displayed)
 - `AfterCurrentDate`
 - `AfterLastDayOfMonth`
 - `BeforeToday`
