@@ -16,7 +16,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "serd
 clap = { version = "4.5.49", features = ["derive", "cargo"] }
 toml = "0.9.*"
 serde = { version = "1.0", features = ["derive"] }
-xdg = "2.5.2"
+xdg = "3.0.0"
 anstyle = "1.0.11"
 icalendar = "0.17"
 rrule = { version = "0.14.0", features = ["serde"]}
