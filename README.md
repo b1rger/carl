@@ -172,6 +172,12 @@ styletype = 'Light'
 - `CurrentDate`
 - `AfterCurrentDate`
 - `AfterLastDayOfMonth`
+- `BeforeToday`
+- `Today`
+- `AfterToday`
+- `BeforeSpecifiedDate`
+- `SpecifiedDate` (the date passed as commandline arguments, if a specific date was passed)
+- `AfterSpecifiedDate`
 - `LastDayOfMonth`
 - `IsEvent`
 - `Monday`
