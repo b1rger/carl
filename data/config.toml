@@ -1,8 +1,8 @@
 ################################
-# default config file for calr #
+# default config file for carl #
 ################################
 
-# the name of the calr theme:
+# the name of the carl theme:
 theme = "default"
 
 # you can include multiple ics files:
