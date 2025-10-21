@@ -24,20 +24,16 @@ pub struct Config {
 impl Config {
     #[cfg(not(tarpaulin_include))]
     pub fn read() -> Config {
-        match xdg::BaseDirectories::with_prefix(crate_name!()) {
-            Ok(xdg_dirs) => {
-                if let Some(config_path) = xdg_dirs.find_config_file("config.toml") {
-                    let config_content = fs::read_to_string(config_path).unwrap_or_default();
-                    match toml::from_str(&config_content) {
-                        Ok(config) => return config,
-                        Err(e) => eprintln!("Could not parse config file: {}", e),
-                    }
-                } else {
-                    //for now disabled, should only be shown with some kind of --debug flag
-                    //eprintln!("Could not load configuration file, using default settings.");
-                }
+        let xdg_dirs = xdg::BaseDirectories::with_prefix(crate_name!());
+        if let Some(config_path) = xdg_dirs.find_config_file("config.toml") {
+            let config_content = fs::read_to_string(config_path).unwrap_or_default();
+            match toml::from_str(&config_content) {
+                Ok(config) => return config,
+                Err(e) => eprintln!("Could not parse config file: {}", e),
             }
-            Err(e) => eprintln!("Cannot determine XDG base directories: {}", e),
+        } else {
+            //for now disabled, should only be shown with some kind of --debug flag
+            //eprintln!("Could not load configuration file, using default settings.");
         }
         Config::default()
     }

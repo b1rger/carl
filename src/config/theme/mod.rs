@@ -20,24 +20,15 @@ impl Theme {
     #[cfg(not(tarpaulin_include))]
     pub fn read(theme: &Option<String>) -> Theme {
         if let Some(themename) = theme {
-            match xdg::BaseDirectories::with_prefix(crate_name!()) {
-                Ok(xdg_dirs) => {
-                    if let Some(theme_path) =
-                        xdg_dirs.find_config_file(format!("{}.theme", themename))
-                    {
-                        let theme_content = fs::read_to_string(theme_path).unwrap_or_default();
-                        match toml::from_str(&theme_content) {
-                            Ok(theme) => return theme,
-                            Err(e) => eprintln!("Could not parse theme file: {}", e),
-                        }
-                    } else {
-                        eprintln!(
-                            "Could not load theme file {}.toml, using builtin theme.",
-                            themename
-                        );
-                    }
+            let xdg_dirs = xdg::BaseDirectories::with_prefix(crate_name!());
+            if let Some(theme_path) = xdg_dirs.find_config_file(format!("{}.theme", themename)) {
+                let theme_content = fs::read_to_string(theme_path).unwrap_or_default();
+                match toml::from_str(&theme_content) {
+                    Ok(theme) => return theme,
+                    Err(e) => eprintln!("Could not parse theme file: {}", e),
                 }
-                Err(e) => eprintln!("Cannot determine XDG base directories: {}", e),
+            } else {
+                eprintln!("Could not load theme file {}.toml, using builtin theme.", themename);
             }
         }
         Theme::default()
