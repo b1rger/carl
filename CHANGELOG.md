@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/b1rger/carl/compare/v0.4.0...v0.5.0) (2025-12-07)
+
+
+### Features
+
+* **dateproperties:** add "today" related date properties ([6457745](https://github.com/b1rger/carl/commit/64577453cfa503fc6e533fefec5c430f3e18444c))
+* **properties:** add "specified date" related properties ([db79c1a](https://github.com/b1rger/carl/commit/db79c1a7a93c97ba931283959b6ef855c4419a4c))
+* **theme:** adapt default theme ([f326dbf](https://github.com/b1rger/carl/commit/f326dbf5144fe2287c243d445b049c5cfdf71b49))
+
 ## [0.4.0](https://github.com/b1rger/carl/compare/v0.3.1...v0.4.0) (2025-09-28)
 
 
