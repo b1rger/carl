@@ -437,9 +437,9 @@ dependencies = [
 
 [[package]]
 name = "minijinja-embed"
-version = "2.12.0"
+version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1437c67e5470a94aae60bb715c92581e479476e1bbb45a7d467063ead7f543ad"
+checksum = "c77bbc78d3484afc9541b13bb17773dc915b43c0f615c528e736d885773ffa61"
 
 [[package]]
 name = "minimal-lexical"
