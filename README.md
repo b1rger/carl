@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 `cal(1)` implementations out there, but also adds enhanced features like colors
 and ical support.
 
-**If you find any bugs or have ideas for additional features, please don't hesitate to create a bug report or a feature request [on codeberg](https://codeberg.org/birger/carl/issues/new) or [github](https://github.com/b1rger/carl/issues/new).**
+**If you find any bugs or have ideas for additional features, please don't hesitate to create a bug report or a feature request [on codeberg](https://codeberg.org/birger/carl/issues/new).**
 
 ---
 
