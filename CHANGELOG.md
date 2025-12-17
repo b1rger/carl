@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/b1rger/carl/compare/v0.5.0...v0.5.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* **deps:** bump icalendar version to 0.17.6 ([a943942](https://github.com/b1rger/carl/commit/a943942bb732eb97a7516940ca439ffe6b0a852d)), closes [#182](https://github.com/b1rger/carl/issues/182)
+
 ## [0.5.0](https://github.com/b1rger/carl/compare/v0.4.0...v0.5.0) (2025-12-07)
 
 
