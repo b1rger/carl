@@ -12,7 +12,6 @@ mod utils;
 extern crate clap;
 extern crate serde;
 extern crate toml;
-extern crate xdg;
 use std::process;
 
 use context::Context;

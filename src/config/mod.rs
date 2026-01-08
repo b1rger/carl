@@ -7,7 +7,6 @@ mod theme;
 pub use theme::StyleName::*;
 pub use theme::{DateProperty, Style, StyleName, StyleType, Theme};
 
-extern crate xdg;
 use clap::crate_name;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -24,12 +23,15 @@ pub struct Config {
 impl Config {
     #[cfg(not(tarpaulin_include))]
     pub fn read() -> Config {
-        let xdg_dirs = xdg::BaseDirectories::with_prefix(crate_name!());
-        if let Some(config_path) = xdg_dirs.find_config_file("config.toml") {
-            let config_content = fs::read_to_string(config_path).unwrap_or_default();
-            match toml::from_str(&config_content) {
-                Ok(config) => return config,
-                Err(e) => eprintln!("Could not parse config file: {}", e),
+        if let Some(config_path) = directories::ProjectDirs::from("org", "bisco", crate_name!()) {
+            let config_path = config_path.config_dir().as_os_str();
+            let config_file = PathBuf::from(config_path).join("config.toml");
+            if config_file.exists() {
+                let config_content = fs::read_to_string(config_file).unwrap_or_default();
+                match toml::from_str(&config_content) {
+                    Ok(config) => return config,
+                    Err(e) => eprintln!("Could not parse config file: {}", e),
+                }
             }
         } else {
             //for now disabled, should only be shown with some kind of --debug flag
