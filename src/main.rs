@@ -12,7 +12,6 @@ mod utils;
 extern crate clap;
 extern crate serde;
 extern crate toml;
-extern crate xdg;
 use std::process;
 
 use context::Context;
@@ -77,7 +76,7 @@ fn main() {
     minijinja_contrib::add_to_environment(&mut env);
 
     let date_styler = objects::DateStyler::new(event_instances.clone(), ctx.usersetdate, ctx.specified_date, ctx.theme.clone(), ctx.styletype);
-    let template_context = context! { 
+    let template_context = context! {
         cli => ctx.opts,
         columns => ctx.columns,
         dates_per_month => dates_per_month,
