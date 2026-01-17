@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/b1rger/carl/compare/v0.5.1...v0.6.0) (2026-01-17)
+
+
+### Features
+
+* replace xdg with directories crate to enable more platforms ([494b2ce](https://github.com/b1rger/carl/commit/494b2ce0644420e136913fa5d53fdb45abd6f032))
+
 ## [0.5.1](https://github.com/b1rger/carl/compare/v0.5.0...v0.5.1) (2025-12-17)
 
 
