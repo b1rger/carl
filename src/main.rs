@@ -9,9 +9,6 @@ mod events;
 mod template;
 mod utils;
 
-extern crate clap;
-extern crate serde;
-extern crate toml;
 use std::process;
 
 use context::Context;
