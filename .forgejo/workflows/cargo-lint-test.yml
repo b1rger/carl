@@ -1,0 +1,28 @@
+name: Lint & Test
+on: [pull_request, workflow_dispatch]
+
+jobs:
+  lint:
+    runs-on: codeberg-small-lazy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install & setup rustup
+        run: |
+          sudo apt-get -y update && sudo apt-get -y install rustup
+          rustup set profile minimal && rustup default stable
+      - name: Cargo fmt
+        run: cargo fmt
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features
+  test:
+    runs-on: codeberg-small-lazy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install & setup rustfmt
+        run: |
+          sudo apt-get -y update && sudo apt-get -y install rustup faketime
+          rustup set profile minimal && rustup default stable
+      - name: Cargo test
+        run: TZ='GST-1' cargo test
+      - name: E2E tests
+        run: ./tests/test.sh

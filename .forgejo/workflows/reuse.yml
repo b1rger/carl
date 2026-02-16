@@ -1,0 +1,12 @@
+name: REUSE Compliance Check
+on: pull_request
+
+jobs:
+  reuse:
+    runs-on: codeberg-tiny-lazy
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install reuse
+      run: sudo apt-get -y update && sudo apt-get -y install reuse
+    - name: REUSE Compliance Check
+      run: reuse lint

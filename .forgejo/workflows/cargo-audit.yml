@@ -1,0 +1,18 @@
+name: Cargo audit
+on:
+  push:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+
+jobs:
+  audit:
+    runs-on: codeberg-tiny-lazy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install & setup rustup
+        run: |
+          sudo apt-get -y update && sudo apt-get -y install rustup
+          rustup set profile minimal && rustup default stable
+      - name: Cargo audit
+        run: cargo audit
