@@ -1,0 +1,25 @@
+name: Release Plz
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-plz:
+    runs-on: codeberg-tiny
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install & setup rustup
+        run: |
+          sudo apt-get -y update && sudo apt-get -y install rustup
+          rustup set profile minimal && rustup default stable
+      - name: Fetch release-plz
+        run: |
+          curl -L https://github.com/release-plz/release-plz/releases/download/release-plz-v0.3.156/release-plz-x86_64-unknown-linux-gnu.tar.gz -o /tmp/release-plz.tar.gz
+          tar xzvf /tmp/release-plz.tar.gz -C /usr/local/bin/
+      - name: Setup git
+        run: |
+          git config user.name "Release Plz Bot"
+          git config user.email "release-plz-bot@noreply.codeberg.org"
+      - name: Run release-plz
+        run: /usr/local/bin/release-plz release-pr --git-token ${FORGEJO_TOKEN} --forge gitea
