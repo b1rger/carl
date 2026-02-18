@@ -9,7 +9,7 @@ jobs:
       - name: Install & setup rustup
         run: |
           sudo apt-get -y update && sudo apt-get -y install rustup
-          rustup set profile minimal && rustup default stable
+          rustup set profile minimal && rustup default stable && rustup component add rustfmt clippy
       - name: Cargo fmt
         run: cargo fmt
       - name: Run clippy
@@ -18,7 +18,7 @@ jobs:
     runs-on: codeberg-small-lazy
     steps:
       - uses: actions/checkout@v3
-      - name: Install & setup rustfmt
+      - name: Install & setup rustup
         run: |
           sudo apt-get -y update && sudo apt-get -y install rustup faketime
           rustup set profile minimal && rustup default stable

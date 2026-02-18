@@ -26,6 +26,10 @@ Files: .github/*
 Copyright: 2023 Birger Schacht <birger@rantanplan.org>
 License: CC0-1.0
 
+Files: .forgejo/*
+Copyright: 2023 Birger Schacht <birger@rantanplan.org>
+License: CC0-1.0
+
 Files: tests/testfiles/*
 Copyright: 2025 Birger Schacht <birger@rantanplan.org>
 License: CC0-1.0
