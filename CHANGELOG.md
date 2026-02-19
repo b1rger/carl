@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1](https://codeberg.org/birger/carl/compare/v0.6.0...v0.6.1) - 2026-02-19
+
+### Other
+
+- add release-plz action
+
 ## [0.6.0](https://github.com/b1rger/carl/compare/v0.5.1...v0.6.0) (2026-01-17)
 
 
